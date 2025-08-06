@@ -1,0 +1,2433 @@
+<!DOCTYPE html>
+<html lang="id" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Aplikasi Pembuat Gambar dan Video Promosi</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Poppins', sans-serif;
+        }
+        .glass-card {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border-radius: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            transition: all 0.3s ease-in-out;
+        }
+        .glass-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+        .btn-primary {
+            background: linear-gradient(90deg, #FF6B6B, #FFD93D);
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        }
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.2);
+        }
+        .btn-secondary {
+            background-color: rgba(255, 255, 255, 0.2);
+            transition: all 0.3s ease;
+        }
+        .btn-secondary:hover {
+            background-color: rgba(255, 255, 255, 0.4);
+        }
+        .step-number {
+            background: linear-gradient(90deg, #FF6B6B, #FFD93D);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .loader {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #FF6B6B;
+            border-radius: 50%;
+            width: 24px;
+            height: 24px;
+            animation: spin 1s linear infinite;
+        }
+        .option-button {
+            border: 2px solid transparent;
+            transition: all 0.3s ease;
+        }
+        .option-button.selected {
+            border-color: #FF6B6B;
+            background-color: rgba(255, 107, 107, 0.2);
+            transform: scale(1.05);
+        }
+        .generated-content {
+            animation: fadeIn 0.5s ease-in-out;
+        }
+        .prompt-textarea.locked {
+            overflow-y: hidden;
+            cursor: not-allowed;
+        }
+        .locked-prompt-content {
+            filter: blur(4px);
+            opacity: 0.6;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            user-select: none;
+        }
+        .locked-prompt-content:hover {
+            filter: blur(2px);
+        }
+        #tutorialModalContent h2 {
+            font-size: 1.5rem;
+            font-weight: bold;
+            margin-top: 1.5rem;
+            margin-bottom: 0.5rem;
+            border-bottom: 1px solid #FFD93D;
+            padding-bottom: 0.25rem;
+        }
+        #tutorialModalContent h3 {
+            font-size: 1.25rem;
+            font-weight: bold;
+            margin-top: 1rem;
+            margin-bottom: 0.5rem;
+        }
+         #tutorialModalContent p, #tutorialModalContent li {
+            color: #D1D5DB; /* text-gray-300 */
+        }
+        #tutorialModalContent strong {
+            color: #FBBF24; /* text-yellow-400 */
+        }
+        #tutorialModalContent ul {
+            list-style-type: disc;
+            padding-left: 1.5rem;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body class="bg-gray-900 text-white">
+
+    <div class="min-h-screen bg-cover bg-center bg-fixed" style="background-image: linear-gradient(to right top, #6d327c, #485da6, #00a1b5, #00bf72, #a8eb12);">
+        <div id="form-section" class="container mx-auto px-4 py-8 md:py-12 relative">
+            
+            <header class="text-center mb-12 relative">
+                <h1 class="text-4xl md:text-6xl font-bold mb-2">Aplikasi Pembuat Gambar dan Video Promosi</h1>
+                <p class="text-sm md:text-base text-gray-400 mt-2">made by ai.one 081510735932</p>
+                <div class="mt-6 flex justify-center items-center gap-2 md:gap-4">
+                    <button id="tutorialBtn" class="btn-secondary text-white font-semibold py-2 px-4 rounded-lg text-sm md:text-base">Tutorial</button>
+                    <button id="resetBtn" class="btn-secondary text-white font-semibold py-2 px-4 rounded-lg text-sm md:text-base">Reset</button>
+                    <a href="#" id="requestAccessIdBtn" class="btn-secondary text-white font-semibold py-2 px-4 rounded-lg text-sm md:text-base">Minta ID Akses</a>
+                    <a href="#" id="exitBtn" class="btn-secondary text-white font-semibold py-2 px-4 rounded-lg text-sm md:text-base">Keluar</a>
+                </div>
+            </header>
+
+            <section id="card-access-id" class="glass-card p-6 md:p-8 max-w-lg mx-auto">
+                <h3 class="text-2xl font-bold mb-4 text-center">Nomor ID Akses</h3>
+                <p class="mb-4 text-gray-300 text-center">Masukkan Nomor ID untuk membuka akses penuh ke semua fitur.</p>
+                <input type="password" id="accessIdInput" class="w-full bg-gray-800/60 rounded-lg p-3 focus:ring-2 focus:ring-yellow-400 focus:outline-none mb-4" placeholder="Masukkan Nomor ID...">
+                <button id="submitAccessIdBtn" class="w-full btn-primary text-black font-bold py-3 px-6 rounded-lg">Buka Akses</button>
+                <p id="accessIdError" class="text-red-400 text-sm mt-2 text-center h-10"></p>
+            </section>
+
+            <div id="form-container" class="space-y-8 transition-opacity duration-500 hidden">
+
+                <!-- ===== Judul Proyek ===== -->
+                <section id="card-title" class="glass-card p-6 md:p-8">
+                    <h3 class="text-2xl font-bold mb-4 flex items-center"><span class="step-number font-black text-4xl mr-4">🎬</span> Judul Proyek</h3>
+                    <p class="mb-4 text-gray-300">Berikan judul untuk proyek Anda. Ini akan membantu dalam mengidentifikasi prompt Anda nanti.</p>
+                    <input type="text" id="videoTitleInput" class="w-full bg-gray-800/60 rounded-lg p-3 focus:ring-2 focus:ring-yellow-400 focus:outline-none" placeholder="Contoh: Iklan Kopi Pagi Ceria">
+                </section>
+
+                <!-- ===== Nama Sutradara ===== -->
+                <section id="card-director" class="glass-card p-6 md:p-8">
+                    <h3 class="text-2xl font-bold mb-4 flex items-center"><span class="step-number font-black text-4xl mr-4">👤</span> Nama Sutradara</h3>
+                    <p class="mb-4 text-gray-300">Masukkan nama sutradara untuk proyek ini.</p>
+                    <input type="text" id="directorNameInput" class="w-full bg-gray-800/60 rounded-lg p-3 focus:ring-2 focus:ring-yellow-400 focus:outline-none" placeholder="Contoh: Iwan Setiawan">
+                </section>
+
+                <!-- ===== BAGIAN 1: PERSIAPAN DASAR ===== -->
+                <h2 class="text-center text-3xl font-bold border-b-2 border-yellow-400 pb-2">Langkah 1: Persiapan Dasar</h2>
+
+                <!-- Step 1: Model Description -->
+                <section id="card1" class="glass-card p-6 md:p-8">
+                    <h3 class="text-2xl font-bold mb-4 flex items-center"><span class="step-number font-black text-4xl mr-4">A</span> Deskripsikan Peran Dan Karakter Tokoh</h3>
+                    
+                    <!-- Model Group 1 -->
+                    <div id="modelGroup1" class="border-b-2 border-yellow-400/50 pb-6 mb-6">
+                        <h4 class="text-xl font-semibold mb-4 text-yellow-300">Grup Model 1 (dari Foto 1)</h4>
+                        <div class="flex items-center justify-center gap-4 mb-4">
+                            <button id="decreaseModelBtn1" class="btn-secondary rounded-full w-10 h-10 flex items-center justify-center text-2xl font-bold disabled:opacity-50">-</button>
+                            <div><span id="modelCount1" class="text-2xl font-bold">1</span><span class="text-xl ml-2">Model</span></div>
+                            <button id="increaseModelBtn1" class="btn-secondary rounded-full w-10 h-10 flex items-center justify-center text-2xl font-bold">+</button>
+                        </div>
+                        <div class="grid md:grid-cols-2 gap-6 items-start">
+                            <div>
+                                <label for="imageUpload1" class="cursor-pointer w-full h-48 bg-gray-700/50 rounded-lg flex flex-col items-center justify-center border-2 border-dashed border-gray-500 hover:border-yellow-400 transition-colors"><svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10 text-gray-400 mb-2" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" /></svg><span id="uploadText1" class="text-gray-400 text-center px-2">Klik buat upload foto grup 1</span><input type="file" id="imageUpload1" class="hidden" accept="image/*"></label>
+                                <img id="imagePreview1" src="" alt="Image Preview" class="hidden w-full h-48 object-cover rounded-lg mt-4"/>
+                            </div>
+                            <div>
+                                <h5 class="font-semibold mb-2">Detail Opsional</h5>
+                                <div class="grid grid-cols-2 gap-2 mb-4">
+                                    <input type="text" id="characterNameInput1" class="w-full bg-gray-800/60 rounded-lg p-2 focus:ring-2 focus:ring-yellow-400 focus:outline-none text-sm" placeholder="Nama Karakter">
+                                    <input type="text" id="characterRoleInput1" class="w-full bg-gray-800/60 rounded-lg p-2 focus:ring-2 focus:ring-yellow-400 focus:outline-none text-sm" placeholder="Peran Karakter">
+                                    <input type="text" id="nationalityInput1" class="w-full bg-gray-800/60 rounded-lg p-2 focus:ring-2 focus:ring-yellow-400 focus:outline-none text-sm" placeholder="Warga Negara">
+                                    <input type="text" id="ethnicityInput1" class="w-full bg-gray-800/60 rounded-lg p-2 focus:ring-2 focus:ring-yellow-400 focus:outline-none text-sm" placeholder="Suku Bangsa">
+                                    <input type="number" id="ageInput1" class="w-full bg-gray-800/60 rounded-lg p-2 focus:ring-2 focus:ring-yellow-400 focus:outline-none text-sm" placeholder="Usia">
+                                    <input type="number" id="weightInput1" class="w-full bg-gray-800/60 rounded-lg p-2 focus:ring-2 focus:ring-yellow-400 focus:outline-none text-sm" placeholder="Berat (kg)">
+                                </div>
+                                
+                                <h5 class="font-semibold mb-2">Warna Kulit:</h5>
+                                <div id="skinColorOptions1" class="flex flex-wrap gap-2 mb-2">
+                                    <button class="option-button btn-secondary px-3 py-1 text-sm rounded-lg" data-value="light skin">Cerah</button>
+                                    <button class="option-button btn-secondary px-3 py-1 text-sm rounded-lg" data-value="tan skin">Sawo Matang</button>
+                                    <button class="option-button btn-secondary px-3 py-1 text-sm rounded-lg" data-value="olive skin">Zaitun</button>
+                                    <button class="option-button btn-secondary px-3 py-1 text-sm rounded-lg" data-value="dark skin">Gelap</button>
+                                </div>
+                                <h5 class="font-semibold mb-2">Bentuk Wajah:</h5>
+                                <div id="faceShapeOptions1" class="flex flex-wrap gap-2 mb-2">
+                                    <button class="option-button btn-secondary px-3 py-1 text-sm rounded-lg" data-value="oval face">Oval</button>
+                                    <button class="option-button btn-secondary px-3 py-1 text-sm rounded-lg" data-value="round face">Bulat</button>
+                                    <button class="option-button btn-secondary px-3 py-1 text-sm rounded-lg" data-value="square face">Kotak</button>
+                                    <button class="option-button btn-secondary px-3 py-1 text-sm rounded-lg" data-value="heart-shaped face">Hati</button>
+                                </div>
+                                <h5 class="font-semibold mb-2">Bentuk Mata:</h5>
+                                <div id="eyesShapeOptions1" class="flex flex-wrap gap-2 mb-2">
+                                    <button class="option-button btn-secondary px-3 py-1 text-sm rounded-lg" data-value="almond-shaped eyes">Almond</button>
+                                    <button class="option-button btn-secondary px-3 py-1 text-sm rounded-lg" data-value="round eyes">Bulat</button>
+                                    <button class="option-button btn-secondary px-3 py-1 text-sm rounded-lg" data-value="monolid eyes">Monolid</button>
+                                </div>
+                                <h5 class="font-semibold mb-2">Bentuk Hidung:</h5>
+                                <div id="noseShapeOptions1" class="flex flex-wrap gap-2 mb-2">
+                                    <button class="option-button btn-secondary px-3 py-1 text-sm rounded-lg" data-value="straight nose">Lurus</button>
+                                    <button class="option-button btn-secondary px-3 py-1 text-sm rounded-lg" data-value="button nose">Kecil</button>
+                                    <button class="option-button btn-secondary px-3 py-1 text-sm rounded-lg" data-value="wide nose">Lebar</button>
+                                </div>
+                                <h5 class="font-semibold mb-2">Gaya Rambut:</h5>
+                                <div id="hairStyleOptions1" class="flex flex-wrap gap-2 mb-4">
+                                    <button class="option-button btn-secondary px-3 py-1 text-sm rounded-lg" data-value="straight hair">Lurus</button>
+                                    <button class="option-button btn-secondary px-3 py-1 text-sm rounded-lg" data-value="wavy hair">Bergelombang</button>
+                                    <button class="option-button btn-secondary px-3 py-1 text-sm rounded-lg" data-value="curly hair">Keriting</button>
+                                    <button class="option-button btn-secondary px-3 py-1 text-sm rounded-lg" data-value="short bob cut">Bob Pendek</button>
+                                </div>
+
+                                <h5 class="font-semibold mb-2">Deskripsi Outfit (Input)</h5>
+                                <textarea id="outfitInput1" class="w-full bg-gray-800/60 rounded-lg p-3 mb-2 focus:ring-2 focus:ring-yellow-400 focus:outline-none" placeholder="e.g., a white oversized t-shirt..."></textarea>
+                                <label for="outfitImageUpload1" class="cursor-pointer text-sm text-yellow-300 hover:text-yellow-200">atau unggah gambar outfit</label>
+                                <input type="file" id="outfitImageUpload1" class="hidden" accept="image/*">
+                                <button id="generateOutfitDescBtn1" class="hidden w-full mt-2 btn-secondary text-white text-sm font-bold py-1 px-2 rounded-lg flex items-center justify-center">
+                                    <span id="outfitBtnText1">Deskripsikan Outfit dari Gambar</span>
+                                    <div id="outfitLoader1" class="loader ml-2 hidden"></div>
+                                </button>
+                                
+                                <div class="grid grid-cols-2 gap-2 mt-4 mb-2">
+                                    <input type="text" id="outfitIdInput1" class="w-full bg-gray-800/60 rounded-lg p-2 focus:ring-2 focus:ring-yellow-400 focus:outline-none text-sm" placeholder="ID Outfit (A, B..)">
+                                    <input type="text" id="outfitColorInput1" class="w-full bg-gray-800/60 rounded-lg p-2 focus:ring-2 focus:ring-yellow-400 focus:outline-none text-sm" placeholder="Warna Outfit">
+                                </div>
+                                <input type="text" id="specialAttributesInput1" class="w-full bg-gray-800/60 rounded-lg p-2 mb-2 focus:ring-2 focus:ring-yellow-400 focus:outline-none text-sm" placeholder="Atribut Khusus (e.g., kacamata)">
+                                <input type="text" id="propertyInput1" class="w-full bg-gray-800/60 rounded-lg p-2 mb-4 focus:ring-2 focus:ring-yellow-400 focus:outline-none text-sm" placeholder="Properti Khusus (e.g., sepeda)">
+                                <button id="generateDescBtn1" class="w-full btn-primary text-black font-bold py-3 px-6 rounded-lg flex items-center justify-center disabled:opacity-50" disabled><span id="descBtnText1">Jadiin Deskripsi!</span><div id="descLoader1" class="loader ml-3 hidden"></div></button>
+                                <textarea id="imageDescription1" class="w-full h-24 mt-4 bg-gray-800/60 rounded-lg p-3 focus:ring-2 focus:ring-yellow-400 focus:outline-none" placeholder="Deskripsi model akan muncul di sini..."></textarea>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Model Group 2 (Initially Hidden) -->
+                    <div id="modelGroup2" class="hidden border-b-2 border-teal-400/50 pb-6 mb-6">
+                         <div class="flex justify-between items-center mb-4">
+                            <h4 class="text-xl font-semibold text-teal-300">Grup Model 2 (dari Foto 2)</h4>
+                            <button id="removeGroup2Btn" class="text-red-400 hover:text-red-300 text-sm font-semibold">Hapus Grup</button>
+                        </div>
+                        <div class="flex items-center justify-center gap-4 mb-4">
+                            <button id="decreaseModelBtn2" class="btn-secondary rounded-full w-10 h-10 flex items-center justify-center text-2xl font-bold disabled:opacity-50">-</button>
+                            <div><span id="modelCount2" class="text-2xl font-bold">1</span><span class="text-xl ml-2">Model</span></div>
+                            <button id="increaseModelBtn2" class="btn-secondary rounded-full w-10 h-10 flex items-center justify-center text-2xl font-bold">+</button>
+                        </div>
+                        <div class="grid md:grid-cols-2 gap-6 items-start">
+                            <div>
+                                <label for="imageUpload2" class="cursor-pointer w-full h-48 bg-gray-700/50 rounded-lg flex flex-col items-center justify-center border-2 border-dashed border-gray-500 hover:border-teal-400 transition-colors"><svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10 text-gray-400 mb-2" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" /></svg><span id="uploadText2" class="text-gray-400 text-center px-2">Klik buat upload foto grup 2</span><input type="file" id="imageUpload2" class="hidden" accept="image/*"></label>
+                                <img id="imagePreview2" src="" alt="Image Preview" class="hidden w-full h-48 object-cover rounded-lg mt-4"/>
+                            </div>
+                            <div>
+                                <h5 class="font-semibold mb-2">Detail Opsional</h5>
+                                <div class="grid grid-cols-2 gap-2 mb-4">
+                                    <input type="text" id="characterNameInput2" class="w-full bg-gray-800/60 rounded-lg p-2 focus:ring-2 focus:ring-teal-400 focus:outline-none text-sm" placeholder="Nama Karakter">
+                                    <input type="text" id="characterRoleInput2" class="w-full bg-gray-800/60 rounded-lg p-2 focus:ring-2 focus:ring-teal-400 focus:outline-none text-sm" placeholder="Peran Karakter">
+                                    <input type="text" id="nationalityInput2" class="w-full bg-gray-800/60 rounded-lg p-2 focus:ring-2 focus:ring-teal-400 focus:outline-none text-sm" placeholder="Warga Negara">
+                                    <input type="text" id="ethnicityInput2" class="w-full bg-gray-800/60 rounded-lg p-2 focus:ring-2 focus:ring-teal-400 focus:outline-none text-sm" placeholder="Suku Bangsa">
+                                    <input type="number" id="ageInput2" class="w-full bg-gray-800/60 rounded-lg p-2 focus:ring-2 focus:ring-teal-400 focus:outline-none text-sm" placeholder="Usia">
+                                    <input type="number" id="weightInput2" class="w-full bg-gray-800/60 rounded-lg p-2 focus:ring-2 focus:ring-teal-400 focus:outline-none text-sm" placeholder="Berat (kg)">
+                                </div>
+                                <h5 class="font-semibold mb-2">Warna Kulit:</h5>
+                                <div id="skinColorOptions2" class="flex flex-wrap gap-2 mb-2">
+                                    <button class="option-button btn-secondary px-3 py-1 text-sm rounded-lg" data-value="light skin">Cerah</button>
+                                    <button class="option-button btn-secondary px-3 py-1 text-sm rounded-lg" data-value="tan skin">Sawo Matang</button>
+                                    <button class="option-button btn-secondary px-3 py-1 text-sm rounded-lg" data-value="olive skin">Zaitun</button>
+                                    <button class="option-button btn-secondary px-3 py-1 text-sm rounded-lg" data-value="dark skin">Gelap</button>
+                                </div>
+                                <h5 class="font-semibold mb-2">Bentuk Wajah:</h5>
+                                <div id="faceShapeOptions2" class="flex flex-wrap gap-2 mb-2">
+                                    <button class="option-button btn-secondary px-3 py-1 text-sm rounded-lg" data-value="oval face">Oval</button>
+                                    <button class="option-button btn-secondary px-3 py-1 text-sm rounded-lg" data-value="round face">Bulat</button>
+                                    <button class="option-button btn-secondary px-3 py-1 text-sm rounded-lg" data-value="square face">Kotak</button>
+                                    <button class="option-button btn-secondary px-3 py-1 text-sm rounded-lg" data-value="heart-shaped face">Hati</button>
+                                </div>
+                                <h5 class="font-semibold mb-2">Bentuk Mata:</h5>
+                                <div id="eyesShapeOptions2" class="flex flex-wrap gap-2 mb-2">
+                                    <button class="option-button btn-secondary px-3 py-1 text-sm rounded-lg" data-value="almond-shaped eyes">Almond</button>
+                                    <button class="option-button btn-secondary px-3 py-1 text-sm rounded-lg" data-value="round eyes">Bulat</button>
+                                    <button class="option-button btn-secondary px-3 py-1 text-sm rounded-lg" data-value="monolid eyes">Monolid</button>
+                                </div>
+                                <h5 class="font-semibold mb-2">Bentuk Hidung:</h5>
+                                <div id="noseShapeOptions2" class="flex flex-wrap gap-2 mb-2">
+                                    <button class="option-button btn-secondary px-3 py-1 text-sm rounded-lg" data-value="straight nose">Lurus</button>
+                                    <button class="option-button btn-secondary px-3 py-1 text-sm rounded-lg" data-value="button nose">Kecil</button>
+                                    <button class="option-button btn-secondary px-3 py-1 text-sm rounded-lg" data-value="wide nose">Lebar</button>
+                                </div>
+                                <h5 class="font-semibold mb-2">Gaya Rambut:</h5>
+                                <div id="hairStyleOptions2" class="flex flex-wrap gap-2 mb-4">
+                                    <button class="option-button btn-secondary px-3 py-1 text-sm rounded-lg" data-value="straight hair">Lurus</button>
+                                    <button class="option-button btn-secondary px-3 py-1 text-sm rounded-lg" data-value="wavy hair">Bergelombang</button>
+                                    <button class="option-button btn-secondary px-3 py-1 text-sm rounded-lg" data-value="curly hair">Keriting</button>
+                                    <button class="option-button btn-secondary px-3 py-1 text-sm rounded-lg" data-value="short bob cut">Bob Pendek</button>
+                                </div>
+                                <h5 class="font-semibold mb-2">Deskripsi Outfit (Input)</h5>
+                                <textarea id="outfitInput2" class="w-full bg-gray-800/60 rounded-lg p-3 mb-2 focus:ring-2 focus:ring-teal-400 focus:outline-none" placeholder="e.g., a black leather jacket..."></textarea>
+                                <label for="outfitImageUpload2" class="cursor-pointer text-sm text-teal-300 hover:text-teal-200">atau unggah gambar outfit</label>
+                                <input type="file" id="outfitImageUpload2" class="hidden" accept="image/*">
+                                <button id="generateOutfitDescBtn2" class="hidden w-full mt-2 btn-secondary text-white text-sm font-bold py-1 px-2 rounded-lg flex items-center justify-center">
+                                    <span id="outfitBtnText2">Deskripsikan Outfit dari Gambar</span>
+                                    <div id="outfitLoader2" class="loader ml-2 hidden"></div>
+                                </button>
+                                <div class="grid grid-cols-2 gap-2 mt-4 mb-2">
+                                    <input type="text" id="outfitIdInput2" class="w-full bg-gray-800/60 rounded-lg p-2 focus:ring-2 focus:ring-teal-400 focus:outline-none text-sm" placeholder="ID Outfit (A, B..)">
+                                    <input type="text" id="outfitColorInput2" class="w-full bg-gray-800/60 rounded-lg p-2 focus:ring-2 focus:ring-teal-400 focus:outline-none text-sm" placeholder="Warna Outfit">
+                                </div>
+                                <input type="text" id="specialAttributesInput2" class="w-full bg-gray-800/60 rounded-lg p-2 mb-4 focus:ring-2 focus:ring-teal-400 focus:outline-none text-sm" placeholder="Atribut Khusus (e.g., kacamata)">
+                                <input type="text" id="propertyInput2" class="w-full bg-gray-800/60 rounded-lg p-2 mb-4 focus:ring-2 focus:ring-teal-400 focus:outline-none text-sm" placeholder="Properti Khusus (e.g., sepeda)">
+                                <button id="generateDescBtn2" class="w-full btn-primary text-black font-bold py-3 px-6 rounded-lg flex items-center justify-center disabled:opacity-50" disabled><span id="descBtnText2">Jadiin Deskripsi!</span><div id="descLoader2" class="loader ml-3 hidden"></div></button>
+                                <textarea id="imageDescription2" class="w-full h-24 mt-4 bg-gray-800/60 rounded-lg p-3 focus:ring-2 focus:ring-teal-400 focus:outline-none" placeholder="Deskripsi model akan muncul di sini..."></textarea>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Model Group 3 (Initially Hidden) -->
+                    <div id="modelGroup3" class="hidden border-b-2 border-purple-400/50 pb-6 mb-6">
+                         <div class="flex justify-between items-center mb-4">
+                            <h4 class="text-xl font-semibold text-purple-300">Grup Model 3 (dari Foto 3)</h4>
+                            <button id="removeGroup3Btn" class="text-red-400 hover:text-red-300 text-sm font-semibold">Hapus Grup</button>
+                        </div>
+                        <div class="flex items-center justify-center gap-4 mb-4">
+                            <button id="decreaseModelBtn3" class="btn-secondary rounded-full w-10 h-10 flex items-center justify-center text-2xl font-bold disabled:opacity-50">-</button>
+                            <div><span id="modelCount3" class="text-2xl font-bold">1</span><span class="text-xl ml-2">Model</span></div>
+                            <button id="increaseModelBtn3" class="btn-secondary rounded-full w-10 h-10 flex items-center justify-center text-2xl font-bold">+</button>
+                        </div>
+                        <div class="grid md:grid-cols-2 gap-6 items-start">
+                            <div>
+                                <label for="imageUpload3" class="cursor-pointer w-full h-48 bg-gray-700/50 rounded-lg flex flex-col items-center justify-center border-2 border-dashed border-gray-500 hover:border-purple-400 transition-colors"><svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10 text-gray-400 mb-2" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" /></svg><span id="uploadText3" class="text-gray-400 text-center px-2">Klik buat upload foto grup 3</span><input type="file" id="imageUpload3" class="hidden" accept="image/*"></label>
+                                <img id="imagePreview3" src="" alt="Image Preview" class="hidden w-full h-48 object-cover rounded-lg mt-4"/>
+                            </div>
+                            <div>
+                                <h5 class="font-semibold mb-2">Detail Opsional</h5>
+                                <div class="grid grid-cols-2 gap-2 mb-4">
+                                    <input type="text" id="characterNameInput3" class="w-full bg-gray-800/60 rounded-lg p-2 focus:ring-2 focus:ring-purple-400 focus:outline-none text-sm" placeholder="Nama Karakter">
+                                    <input type="text" id="characterRoleInput3" class="w-full bg-gray-800/60 rounded-lg p-2 focus:ring-2 focus:ring-purple-400 focus:outline-none text-sm" placeholder="Peran Karakter">
+                                    <input type="text" id="nationalityInput3" class="w-full bg-gray-800/60 rounded-lg p-2 focus:ring-2 focus:ring-purple-400 focus:outline-none text-sm" placeholder="Warga Negara">
+                                    <input type="text" id="ethnicityInput3" class="w-full bg-gray-800/60 rounded-lg p-2 focus:ring-2 focus:ring-purple-400 focus:outline-none text-sm" placeholder="Suku Bangsa">
+                                    <input type="number" id="ageInput3" class="w-full bg-gray-800/60 rounded-lg p-2 focus:ring-2 focus:ring-purple-400 focus:outline-none text-sm" placeholder="Usia">
+                                    <input type="number" id="weightInput3" class="w-full bg-gray-800/60 rounded-lg p-2 focus:ring-2 focus:ring-purple-400 focus:outline-none text-sm" placeholder="Berat (kg)">
+                                </div>
+                                <h5 class="font-semibold mb-2">Warna Kulit:</h5>
+                                <div id="skinColorOptions3" class="flex flex-wrap gap-2 mb-2">
+                                    <button class="option-button btn-secondary px-3 py-1 text-sm rounded-lg" data-value="light skin">Cerah</button>
+                                    <button class="option-button btn-secondary px-3 py-1 text-sm rounded-lg" data-value="tan skin">Sawo Matang</button>
+                                    <button class="option-button btn-secondary px-3 py-1 text-sm rounded-lg" data-value="olive skin">Zaitun</button>
+                                    <button class="option-button btn-secondary px-3 py-1 text-sm rounded-lg" data-value="dark skin">Gelap</button>
+                                </div>
+                                <h5 class="font-semibold mb-2">Bentuk Wajah:</h5>
+                                <div id="faceShapeOptions3" class="flex flex-wrap gap-2 mb-2">
+                                    <button class="option-button btn-secondary px-3 py-1 text-sm rounded-lg" data-value="oval face">Oval</button>
+                                    <button class="option-button btn-secondary px-3 py-1 text-sm rounded-lg" data-value="round face">Bulat</button>
+                                    <button class="option-button btn-secondary px-3 py-1 text-sm rounded-lg" data-value="square face">Kotak</button>
+                                    <button class="option-button btn-secondary px-3 py-1 text-sm rounded-lg" data-value="heart-shaped face">Hati</button>
+                                </div>
+                                <h5 class="font-semibold mb-2">Bentuk Mata:</h5>
+                                <div id="eyesShapeOptions3" class="flex flex-wrap gap-2 mb-2">
+                                    <button class="option-button btn-secondary px-3 py-1 text-sm rounded-lg" data-value="almond-shaped eyes">Almond</button>
+                                    <button class="option-button btn-secondary px-3 py-1 text-sm rounded-lg" data-value="round eyes">Bulat</button>
+                                    <button class="option-button btn-secondary px-3 py-1 text-sm rounded-lg" data-value="monolid eyes">Monolid</button>
+                                </div>
+                                <h5 class="font-semibold mb-2">Bentuk Hidung:</h5>
+                                <div id="noseShapeOptions3" class="flex flex-wrap gap-2 mb-2">
+                                    <button class="option-button btn-secondary px-3 py-1 text-sm rounded-lg" data-value="straight nose">Lurus</button>
+                                    <button class="option-button btn-secondary px-3 py-1 text-sm rounded-lg" data-value="button nose">Kecil</button>
+                                    <button class="option-button btn-secondary px-3 py-1 text-sm rounded-lg" data-value="wide nose">Lebar</button>
+                                </div>
+                                <h5 class="font-semibold mb-2">Gaya Rambut:</h5>
+                                <div id="hairStyleOptions3" class="flex flex-wrap gap-2 mb-4">
+                                    <button class="option-button btn-secondary px-3 py-1 text-sm rounded-lg" data-value="straight hair">Lurus</button>
+                                    <button class="option-button btn-secondary px-3 py-1 text-sm rounded-lg" data-value="wavy hair">Bergelombang</button>
+                                    <button class="option-button btn-secondary px-3 py-1 text-sm rounded-lg" data-value="curly hair">Keriting</button>
+                                    <button class="option-button btn-secondary px-3 py-1 text-sm rounded-lg" data-value="short bob cut">Bob Pendek</button>
+                                </div>
+                                <h5 class="font-semibold mb-2">Deskripsi Outfit (Input)</h5>
+                                <textarea id="outfitInput3" class="w-full bg-gray-800/60 rounded-lg p-3 mb-2 focus:ring-2 focus:ring-purple-400 focus:outline-none" placeholder="e.g., a red dress..."></textarea>
+                                <label for="outfitImageUpload3" class="cursor-pointer text-sm text-purple-300 hover:text-purple-200">atau unggah gambar outfit</label>
+                                <input type="file" id="outfitImageUpload3" class="hidden" accept="image/*">
+                                <button id="generateOutfitDescBtn3" class="hidden w-full mt-2 btn-secondary text-white text-sm font-bold py-1 px-2 rounded-lg flex items-center justify-center">
+                                    <span id="outfitBtnText3">Deskripsikan Outfit dari Gambar</span>
+                                    <div id="outfitLoader3" class="loader ml-2 hidden"></div>
+                                </button>
+                                <div class="grid grid-cols-2 gap-2 mt-4 mb-2">
+                                    <input type="text" id="outfitIdInput3" class="w-full bg-gray-800/60 rounded-lg p-2 focus:ring-2 focus:ring-purple-400 focus:outline-none text-sm" placeholder="ID Outfit (C, D..)">
+                                    <input type="text" id="outfitColorInput3" class="w-full bg-gray-800/60 rounded-lg p-2 focus:ring-2 focus:ring-purple-400 focus:outline-none text-sm" placeholder="Warna Outfit">
+                                </div>
+                                <input type="text" id="specialAttributesInput3" class="w-full bg-gray-800/60 rounded-lg p-2 mb-4 focus:ring-2 focus:ring-purple-400 focus:outline-none text-sm" placeholder="Atribut Khusus (e.g., kacamata)">
+                                <input type="text" id="propertyInput3" class="w-full bg-gray-800/60 rounded-lg p-2 mb-4 focus:ring-2 focus:ring-purple-400 focus:outline-none text-sm" placeholder="Properti Khusus (e.g., sepeda)">
+                                <button id="generateDescBtn3" class="w-full btn-primary text-black font-bold py-3 px-6 rounded-lg flex items-center justify-center disabled:opacity-50" disabled><span id="descBtnText3">Jadiin Deskripsi!</span><div id="descLoader3" class="loader ml-3 hidden"></div></button>
+                                <textarea id="imageDescription3" class="w-full h-24 mt-4 bg-gray-800/60 rounded-lg p-3 focus:ring-2 focus:ring-purple-400 focus:outline-none" placeholder="Deskripsi model akan muncul di sini..."></textarea>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Model Group 4 (Initially Hidden) -->
+                    <div id="modelGroup4" class="hidden border-b-2 border-pink-400/50 pb-6 mb-6">
+                         <div class="flex justify-between items-center mb-4">
+                            <h4 class="text-xl font-semibold text-pink-300">Grup Model 4 (dari Foto 4)</h4>
+                            <button id="removeGroup4Btn" class="text-red-400 hover:text-red-300 text-sm font-semibold">Hapus Grup</button>
+                        </div>
+                        <div class="flex items-center justify-center gap-4 mb-4">
+                            <button id="decreaseModelBtn4" class="btn-secondary rounded-full w-10 h-10 flex items-center justify-center text-2xl font-bold disabled:opacity-50">-</button>
+                            <div><span id="modelCount4" class="text-2xl font-bold">1</span><span class="text-xl ml-2">Model</span></div>
+                            <button id="increaseModelBtn4" class="btn-secondary rounded-full w-10 h-10 flex items-center justify-center text-2xl font-bold">+</button>
+                        </div>
+                        <div class="grid md:grid-cols-2 gap-6 items-start">
+                            <div>
+                                <label for="imageUpload4" class="cursor-pointer w-full h-48 bg-gray-700/50 rounded-lg flex flex-col items-center justify-center border-2 border-dashed border-gray-500 hover:border-pink-400 transition-colors"><svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10 text-gray-400 mb-2" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" /></svg><span id="uploadText4" class="text-gray-400 text-center px-2">Klik buat upload foto grup 4</span><input type="file" id="imageUpload4" class="hidden" accept="image/*"></label>
+                                <img id="imagePreview4" src="" alt="Image Preview" class="hidden w-full h-48 object-cover rounded-lg mt-4"/>
+                            </div>
+                            <div>
+                                <h5 class="font-semibold mb-2">Detail Opsional</h5>
+                                <div class="grid grid-cols-2 gap-2 mb-4">
+                                    <input type="text" id="characterNameInput4" class="w-full bg-gray-800/60 rounded-lg p-2 focus:ring-2 focus:ring-pink-400 focus:outline-none text-sm" placeholder="Nama Karakter">
+                                    <input type="text" id="characterRoleInput4" class="w-full bg-gray-800/60 rounded-lg p-2 focus:ring-2 focus:ring-pink-400 focus:outline-none text-sm" placeholder="Peran Karakter">
+                                    <input type="text" id="nationalityInput4" class="w-full bg-gray-800/60 rounded-lg p-2 focus:ring-2 focus:ring-pink-400 focus:outline-none text-sm" placeholder="Warga Negara">
+                                    <input type="text" id="ethnicityInput4" class="w-full bg-gray-800/60 rounded-lg p-2 focus:ring-2 focus:ring-pink-400 focus:outline-none text-sm" placeholder="Suku Bangsa">
+                                    <input type="number" id="ageInput4" class="w-full bg-gray-800/60 rounded-lg p-2 focus:ring-2 focus:ring-pink-400 focus:outline-none text-sm" placeholder="Usia">
+                                    <input type="number" id="weightInput4" class="w-full bg-gray-800/60 rounded-lg p-2 focus:ring-2 focus:ring-pink-400 focus:outline-none text-sm" placeholder="Berat (kg)">
+                                </div>
+                                <h5 class="font-semibold mb-2">Warna Kulit:</h5>
+                                <div id="skinColorOptions4" class="flex flex-wrap gap-2 mb-2">
+                                    <button class="option-button btn-secondary px-3 py-1 text-sm rounded-lg" data-value="light skin">Cerah</button>
+                                    <button class="option-button btn-secondary px-3 py-1 text-sm rounded-lg" data-value="tan skin">Sawo Matang</button>
+                                    <button class="option-button btn-secondary px-3 py-1 text-sm rounded-lg" data-value="olive skin">Zaitun</button>
+                                    <button class="option-button btn-secondary px-3 py-1 text-sm rounded-lg" data-value="dark skin">Gelap</button>
+                                </div>
+                                <h5 class="font-semibold mb-2">Bentuk Wajah:</h5>
+                                <div id="faceShapeOptions4" class="flex flex-wrap gap-2 mb-2">
+                                    <button class="option-button btn-secondary px-3 py-1 text-sm rounded-lg" data-value="oval face">Oval</button>
+                                    <button class="option-button btn-secondary px-3 py-1 text-sm rounded-lg" data-value="round face">Bulat</button>
+                                    <button class="option-button btn-secondary px-3 py-1 text-sm rounded-lg" data-value="square face">Kotak</button>
+                                    <button class="option-button btn-secondary px-3 py-1 text-sm rounded-lg" data-value="heart-shaped face">Hati</button>
+                                </div>
+                                <h5 class="font-semibold mb-2">Bentuk Mata:</h5>
+                                <div id="eyesShapeOptions4" class="flex flex-wrap gap-2 mb-2">
+                                    <button class="option-button btn-secondary px-3 py-1 text-sm rounded-lg" data-value="almond-shaped eyes">Almond</button>
+                                    <button class="option-button btn-secondary px-3 py-1 text-sm rounded-lg" data-value="round eyes">Bulat</button>
+                                    <button class="option-button btn-secondary px-3 py-1 text-sm rounded-lg" data-value="monolid eyes">Monolid</button>
+                                </div>
+                                <h5 class="font-semibold mb-2">Bentuk Hidung:</h5>
+                                <div id="noseShapeOptions4" class="flex flex-wrap gap-2 mb-2">
+                                    <button class="option-button btn-secondary px-3 py-1 text-sm rounded-lg" data-value="straight nose">Lurus</button>
+                                    <button class="option-button btn-secondary px-3 py-1 text-sm rounded-lg" data-value="button nose">Kecil</button>
+                                    <button class="option-button btn-secondary px-3 py-1 text-sm rounded-lg" data-value="wide nose">Lebar</button>
+                                </div>
+                                <h5 class="font-semibold mb-2">Gaya Rambut:</h5>
+                                <div id="hairStyleOptions4" class="flex flex-wrap gap-2 mb-4">
+                                    <button class="option-button btn-secondary px-3 py-1 text-sm rounded-lg" data-value="straight hair">Lurus</button>
+                                    <button class="option-button btn-secondary px-3 py-1 text-sm rounded-lg" data-value="wavy hair">Bergelombang</button>
+                                    <button class="option-button btn-secondary px-3 py-1 text-sm rounded-lg" data-value="curly hair">Keriting</button>
+                                    <button class="option-button btn-secondary px-3 py-1 text-sm rounded-lg" data-value="short bob cut">Bob Pendek</button>
+                                </div>
+                                <h5 class="font-semibold mb-2">Deskripsi Outfit (Input)</h5>
+                                <textarea id="outfitInput4" class="w-full bg-gray-800/60 rounded-lg p-3 mb-2 focus:ring-2 focus:ring-pink-400 focus:outline-none" placeholder="e.g., a blue denim jacket..."></textarea>
+                                <label for="outfitImageUpload4" class="cursor-pointer text-sm text-pink-300 hover:text-pink-200">atau unggah gambar outfit</label>
+                                <input type="file" id="outfitImageUpload4" class="hidden" accept="image/*">
+                                <button id="generateOutfitDescBtn4" class="hidden w-full mt-2 btn-secondary text-white text-sm font-bold py-1 px-2 rounded-lg flex items-center justify-center">
+                                    <span id="outfitBtnText4">Deskripsikan Outfit dari Gambar</span>
+                                    <div id="outfitLoader4" class="loader ml-2 hidden"></div>
+                                </button>
+                                <div class="grid grid-cols-2 gap-2 mt-4 mb-2">
+                                    <input type="text" id="outfitIdInput4" class="w-full bg-gray-800/60 rounded-lg p-2 focus:ring-2 focus:ring-pink-400 focus:outline-none text-sm" placeholder="ID Outfit (E, F..)">
+                                    <input type="text" id="outfitColorInput4" class="w-full bg-gray-800/60 rounded-lg p-2 focus:ring-2 focus:ring-pink-400 focus:outline-none text-sm" placeholder="Warna Outfit">
+                                </div>
+                                <input type="text" id="specialAttributesInput4" class="w-full bg-gray-800/60 rounded-lg p-2 mb-4 focus:ring-2 focus:ring-pink-400 focus:outline-none text-sm" placeholder="Atribut Khusus (e.g., kacamata)">
+                                <input type="text" id="propertyInput4" class="w-full bg-gray-800/60 rounded-lg p-2 mb-4 focus:ring-2 focus:ring-pink-400 focus:outline-none text-sm" placeholder="Properti Khusus (e.g., sepeda)">
+                                <button id="generateDescBtn4" class="w-full btn-primary text-black font-bold py-3 px-6 rounded-lg flex items-center justify-center disabled:opacity-50" disabled><span id="descBtnText4">Jadiin Deskripsi!</span><div id="descLoader4" class="loader ml-3 hidden"></div></button>
+                                <textarea id="imageDescription4" class="w-full h-24 mt-4 bg-gray-800/60 rounded-lg p-3 focus:ring-2 focus:ring-pink-400 focus:outline-none" placeholder="Deskripsi model akan muncul di sini..."></textarea>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <button id="addGroupBtn" class="w-full btn-secondary text-white font-bold py-2 px-4 rounded-lg flex items-center justify-center gap-2">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-plus-circle" viewBox="0 0 16 16"><path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z"/><path d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4z"/></svg>
+                        Tambah Grup Model
+                    </button>
+                </section>
+
+                <!-- Step 1.25: Shared Property -->
+                <section id="card_shared_property" class="glass-card p-6 md:p-8">
+                    <h3 class="text-2xl font-bold mb-4 flex items-center"><span class="step-number font-black text-4xl mr-4">A*</span> Properti yang Digunakan Bersama</h3>
+                    <p class="mb-4 text-gray-300">Jelaskan properti yang mungkin digunakan bersama oleh semua model, seperti meja, sofa, atau mobil.</p>
+                    <textarea id="sharedPropertyInput" class="w-full h-24 bg-gray-800/60 rounded-lg p-3 focus:ring-2 focus:ring-yellow-400 focus:outline-none" placeholder="Contoh: sebuah meja kayu dengan beberapa cangkir kopi di atasnya."></textarea>
+                </section>
+
+                <!-- Step 1.5: Model Activity -->
+                <section id="card1_5" class="glass-card p-6 md:p-8">
+                    <h3 class="text-2xl font-bold mb-4 flex items-center"><span class="step-number font-black text-4xl mr-4">A+</span> Aktivitas & Interaksi Model</h3>
+                    <p class="mb-4 text-gray-300">Jelaskan apa yang sedang dilakukan model. Jika lebih dari satu, jelaskan interaksi mereka.</p>
+                    <textarea id="modelActivityInput" class="w-full h-24 bg-gray-800/60 rounded-lg p-3 focus:ring-2 focus:ring-yellow-400 focus:outline-none" placeholder="Contoh: Model sedang duduk santai sambil tertawa bersama, salah satu dari mereka sedang menunjukkan sesuatu di ponselnya."></textarea>
+                </section>
+
+                <!-- Step 2: Product/Service Description -->
+                <section id="card2" class="glass-card p-6 md:p-8">
+                    <h3 class="text-2xl font-bold mb-4 flex items-center"><span class="step-number font-black text-4xl mr-4">B</span> Jelaskan Produk Barang dan Jasa Anda</h3>
+                    <div class="grid md:grid-cols-2 gap-6">
+                        <div>
+                            <h5 class="font-semibold mb-2">Produk Barang</h5>
+                            <input type="text" id="brandNameInput" class="w-full bg-gray-800/60 rounded-lg p-3 mb-2 focus:ring-2 focus:ring-yellow-400 focus:outline-none" placeholder="Nama Merk (Opsional)">
+                            <input type="text" id="productInput" class="w-full bg-gray-800/60 rounded-lg p-3 mb-2 focus:ring-2 focus:ring-yellow-400 focus:outline-none" placeholder="Nama Produk, cth: Kemeja Flanel">
+                            <p class="text-center text-gray-400 my-2">ATAU</p>
+                            <label for="productImageUpload" class="cursor-pointer w-full bg-gray-700/50 rounded-lg flex items-center justify-center p-2 border-2 border-dashed border-gray-500 hover:border-yellow-400 transition-colors">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-camera mr-2" viewBox="0 0 16 16"><path d="M15 12a1 1 0 0 1-1 1H2a1 1 0 0 1-1-1V6a1 1 0 0 1 1-1h1.172a3 3 0 0 0 2.12-.879l.83-.828A1 1 0 0 1 6.827 3h2.344a1 1 0 0 1 .707.293l.828.828A3 3 0 0 0 12.828 5H14a1 1 0 0 1 1 1v6zM2 4a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2h-1.172a2 2 0 0 1-1.414-.586l-.828-.828A2 2 0 0 0 9.172 2H6.828a2 2 0 0 0-1.414.586l-.828.828A2 2 0 0 1 3.172 4H2z"/><path d="M8 11a2.5 2.5 0 1 1 0-5 2.5 2.5 0 0 1 0 5zm0 1a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7zM3 6.5a.5.5 0 1 1-1 0 .5.5 0 0 1 1 0z"/></svg>
+                                <span id="productUploadText">Upload Gambar Produk</span>
+                                <input type="file" id="productImageUpload" class="hidden" accept="image/*">
+                            </label>
+                            <img id="productImagePreview" src="" class="hidden w-full h-24 object-cover rounded-lg mt-2"/>
+                        </div>
+                        <div>
+                            <h5 class="font-semibold mb-2">Jasa / Profesi Model</h5>
+                            <textarea id="serviceDescriptionInput" class="w-full h-32 bg-gray-800/60 rounded-lg p-3 focus:ring-2 focus:ring-yellow-400 focus:outline-none" placeholder="Contoh: Jasa fotografi profesional untuk acara pernikahan, atau 'Model adalah seorang chef profesional'."></textarea>
+                        </div>
+                    </div>
+                    <div class="mt-6">
+                        <button id="generateProductDescBtn" class="w-full btn-primary text-black font-bold py-3 px-6 rounded-lg flex items-center justify-center disabled:opacity-50" disabled>
+                            <span id="productBtnText">Jadikan Deskripsi Gabungan!</span>
+                            <div id="productLoader" class="loader ml-3 hidden"></div>
+                        </button>
+                        <textarea id="productDescription" class="w-full h-32 mt-4 bg-gray-800/60 rounded-lg p-3 focus:ring-2 focus:ring-yellow-400 focus:outline-none" placeholder="Deskripsi gabungan produk & jasa akan muncul di sini..."></textarea>
+                    </div>
+                </section>
+
+                <!-- Step 3: Scene & Mood -->
+                <section id="card3" class="glass-card p-6 md:p-8">
+                    <h3 class="text-2xl font-bold mb-4 flex items-center"><span class="step-number font-black text-4xl mr-4">C.</span> Atur Tempat dan Suasana</h3>
+                    <div class="grid md:grid-cols-2 gap-x-8 gap-y-6">
+                        <div>
+                            <h4 class="font-semibold mb-3">Setting Tempat:</h4>
+                             <div class="grid grid-cols-2 gap-2 mb-2">
+                                <input type="text" id="regionInput" class="w-full bg-gray-800/60 rounded-lg p-2 focus:ring-2 focus:ring-yellow-400 focus:outline-none text-sm" placeholder="Daerah (e.g., Jakarta)">
+                                <input type="text" id="placeNameInput" class="w-full bg-gray-800/60 rounded-lg p-2 focus:ring-2 focus:ring-yellow-400 focus:outline-none text-sm" placeholder="Nama Tempat (e.g., Kopi Kenangan)">
+                            </div>
+                            <textarea id="locationDescriptionTextarea" class="w-full h-24 mb-2 bg-gray-800/60 rounded-lg p-3 focus:ring-2 focus:ring-yellow-400 focus:outline-none" placeholder="Deskripsi lokasi akan muncul di sini..."></textarea>
+                            <label for="locationImageUpload" class="cursor-pointer w-full bg-gray-700/50 rounded-lg flex items-center justify-center p-2 border-2 border-dashed border-gray-500 hover:border-yellow-400 transition-colors">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-image mr-2" viewBox="0 0 16 16"><path d="M6.002 5.5a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0z"/><path d="M2.002 1a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V3a2 2 0 0 0-2-2h-12zm12 1a1 1 0 0 1 1 1v6.5l-3.777-1.947a.5.5 0 0 0-.577.093l-3.71 3.71-2.66-1.772a.5.5 0 0 0-.63.062L1.002 12V3a1 1 0 0 1 1-1h12z"/></svg>
+                                <span id="locationUploadText">Upload Gambar untuk Deskripsi Otomatis</span>
+                                <input type="file" id="locationImageUpload" class="hidden" accept="image/*">
+                            </label>
+                            <img id="locationImagePreview" src="" class="hidden w-full h-24 object-cover rounded-lg my-2"/>
+                            <button id="generateLocationBtn" class="hidden w-full mt-2 btn-primary text-black font-bold py-2 px-4 rounded-lg flex items-center justify-center">
+                                <span id="locationBtnText">Jadikan Deskripsi Lokasi</span>
+                                <div id="locationLoader" class="loader ml-3 hidden"></div>
+                            </button>
+                        </div>
+                        <div>
+                            <h4 class="font-semibold mb-3">Suasana Video:</h4>
+                            <div id="moodOptions" class="flex flex-wrap gap-3">
+                                <button class="option-button btn-secondary px-4 py-2 rounded-lg" data-value="cheerful and energetic">Ceria</button>
+                                <button class="option-button btn-secondary px-4 py-2 rounded-lg" data-value="relaxed and calm">Santai</button>
+                                <button class="option-button btn-secondary px-4 py-2 rounded-lg" data-value="hype and modern">Hype</button>
+                                <button class="option-button btn-secondary px-4 py-2 rounded-lg" data-value="mysterious and cool">Misterius</button>
+                            </div>
+                        </div>
+                        <div>
+                            <h4 class="font-semibold mb-3">Teknik Pengambilan Gambar:</h4>
+                            <div id="cameraTechniqueOptions" class="flex flex-wrap gap-3">
+                                <button class="option-button btn-secondary px-3 py-1 text-sm rounded-lg" data-value="close up shot">Close Up</button>
+                                <button class="option-button btn-secondary px-3 py-1 text-sm rounded-lg" data-value="medium shot">Medium Shot</button>
+                                <button class="option-button btn-secondary px-3 py-1 text-sm rounded-lg" data-value="long shot">Long Shot</button>
+                                <button class="option-button btn-secondary px-3 py-1 text-sm rounded-lg" data-value="dutch angle shot">Dutch Angle</button>
+                                <button class="option-button btn-secondary px-3 py-1 text-sm rounded-lg" data-value="point of view shot">POV</button>
+                                <button class="option-button btn-secondary px-3 py-1 text-sm rounded-lg" data-value="zooming in shot">Zoom In</button>
+                                <button class="option-button btn-secondary px-3 py-1 text-sm rounded-lg" data-value="zooming out shot">Zoom Out</button>
+                                <button class="option-button btn-secondary px-3 py-1 text-sm rounded-lg" data-value="drone shot">Drone Shot</button>
+                                <button class="option-button btn-secondary px-3 py-1 text-sm rounded-lg" data-value="circling shot">Memutar</button>
+                                <button class="option-button btn-secondary px-3 py-1 text-sm rounded-lg" data-value="tilt down shot">Tilt Down</button>
+                                <button class="option-button btn-secondary px-3 py-1 text-sm rounded-lg" data-value="tilt up shot">Tilt Up</button>
+                            </div>
+                        </div>
+                        <div>
+                            <h4 class="font-semibold mb-3">Efek Angin:</h4>
+                            <div id="windEffectOptions" class="flex flex-wrap gap-3">
+                                <button class="option-button btn-secondary px-4 py-2 rounded-lg" data-value="no wind effect">Tidak Ada Angin</button>
+                                <button class="option-button btn-secondary px-4 py-2 rounded-lg" data-value="a gentle breeze causing subtle movement in hair and clothing">Angin Sepoi-sepoi</button>
+                                <button class="option-button btn-secondary px-4 py-2 rounded-lg" data-value="a moderate wind is blowing, causing hair and clothing to visibly sway">Angin Sedang</button>
+                            </div>
+                        </div>
+                        <div>
+                            <h4 class="font-semibold mb-3">Pencahayaan:</h4>
+                            <div id="lightingOptions" class="flex flex-wrap gap-3">
+                                <button class="option-button btn-secondary px-4 py-2 rounded-lg" data-value="professional studio lighting">Cahaya Studio</button>
+                                <button class="option-button btn-secondary px-4 py-2 rounded-lg" data-value="natural outdoor lighting, with realistic shadows and highlights matching the environment">Cahaya Alami (Outdoor)</button>
+                            </div>
+                        </div>
+                        <div>
+                            <h4 class="font-semibold mb-3">Waktu Pengambilan Gambar:</h4>
+                            <div id="timeOfDayOptions" class="flex flex-wrap gap-3">
+                                <button class="option-button btn-secondary px-4 py-2 rounded-lg" data-value="morning light">Pagi</button>
+                                <button class="option-button btn-secondary px-4 py-2 rounded-lg" data-value="midday sun">Siang</button>
+                                <button class="option-button btn-secondary px-4 py-2 rounded-lg" data-value="golden hour sunset">Sore</button>
+                                <button class="option-button btn-secondary px-4 py-2 rounded-lg" data-value="night time">Malam</button>
+                            </div>
+                        </div>
+                        <div>
+                            <h4 class="font-semibold mb-3">Suhu/Temperatur:</h4>
+                            <div id="temperatureOptions" class="flex flex-wrap gap-3">
+                                <button class="option-button btn-secondary px-4 py-2 rounded-lg" data-value="hot summer day">Panas</button>
+                                <button class="option-button btn-secondary px-4 py-2 rounded-lg" data-value="warm and pleasant">Hangat</button>
+                                <button class="option-button btn-secondary px-4 py-2 rounded-lg" data-value="cool and crisp">Sejuk</button>
+                                <button class="option-button btn-secondary px-4 py-2 rounded-lg" data-value="cold winter weather">Dingin</button>
+                            </div>
+                        </div>
+                        <div class="md:col-span-2">
+                             <h4 class="font-semibold mb-3">Audio Latar (Musik/Suara Suasana):</h4>
+                             <button id="generateMusicBtn" class="w-full btn-secondary text-white font-bold py-3 px-6 rounded-lg flex items-center justify-center">
+                                 <span id="musicBtnText">Rekomendasikan Audio Latar</span>
+                                  <div id="musicLoader" class="loader ml-3 hidden"></div>
+                             </button>
+                             <div id="musicSuggestions" class="mt-4 text-center text-lg h-12 flex items-center justify-center" placeholder="Rekomendasi audio akan muncul di sini..."></div>
+                        </div>
+                        <div class="md:col-span-2">
+                            <h4 class="font-semibold mb-3">Mix Audio:</h4>
+                            <div id="audioMixOptions" class="flex flex-wrap gap-3">
+                                <button class="option-button btn-secondary px-4 py-2 rounded-lg" data-value="Model's voice is clear and dominant, ambient sounds are subtle in the background.">Suara Model Jelas</button>
+                                <button class="option-button btn-secondary px-4 py-2 rounded-lg" data-value="Balanced audio between the model's voice and the ambient sounds.">Seimbang</button>
+                                <button class="option-button btn-secondary px-4 py-2 rounded-lg" data-value="Ambient sounds (like wind, chatter) are prominent, slightly louder than the model's voice for a realistic, immersive feel.">Suara Latar Dominan</button>
+                            </div>
+                        </div>
+                        <div class="md:col-span-2">
+                             <h4 class="font-semibold mb-3">Deskripsi Suasana (Inggris):</h4>
+                             <button id="generateMoodDescBtn" class="w-full btn-secondary text-white font-bold py-3 px-6 rounded-lg flex items-center justify-center">
+                                 <span id="moodDescBtnText">Jadikan Deskripsi Suasana</span>
+                                  <div id="moodDescLoader" class="loader ml-3 hidden"></div>
+                             </button>
+                             <textarea id="moodDescription" class="w-full h-24 mt-4 bg-gray-800/60 rounded-lg p-3 focus:ring-2 focus:ring-yellow-400 focus:outline-none" placeholder="Deskripsi suasana akan muncul di sini..."></textarea>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- ===== BAGIAN 2: RANCANG PHOTO PROMOSI ===== -->
+                <h2 id="title-langkah2" class="text-center text-3xl font-bold border-b-2 border-yellow-400 pb-2 pt-8">Langkah 2: Rancang Photo Promosi</h2>
+                <section id="card-photo-prompt" class="glass-card p-6 md:p-8">
+                     <h4 class="text-xl font-bold mb-4 text-left">Pilih Jenis Photo Promosi</h4>
+                    <div id="photoTypeOptions" class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
+                        <button class="option-button btn-secondary p-4 text-left rounded-lg h-full" data-value="Product Shot">
+                            <h5 class="font-bold">Product Shot (Foto Produk)</h5>
+                            <p class="text-xs text-gray-300 mt-1">Fokus utama pada produk itu sendiri, menonjolkan detail dengan pencahayaan dan latar belakang yang tepat.</p>
+                        </button>
+                        <button class="option-button btn-secondary p-4 text-left rounded-lg h-full" data-value="Lifestyle Photography">
+                            <h5 class="font-bold">Lifestyle Photography</h5>
+                            <p class="text-xs text-gray-300 mt-1">Menampilkan produk sedang digunakan dalam konteks kehidupan nyata untuk membangun hubungan emosional.</p>
+                        </button>
+                        <button class="option-button btn-secondary p-4 text-left rounded-lg h-full" data-value="Hero Image">
+                            <h5 class="font-bold">Hero Image</h5>
+                            <p class="text-xs text-gray-300 mt-1">Gambar utama yang paling mencolok, sering digunakan untuk iklan utama atau halaman depan kampanye.</p>
+                        </button>
+                        <button class="option-button btn-secondary p-4 text-left rounded-lg h-full" data-value="Flat Lay">
+                            <h5 class="font-bold">Flat Lay</h5>
+                            <p class="text-xs text-gray-300 mt-1">Foto dari atas yang menampilkan produk dan item lain yang disusun secara estetis.</p>
+                        </button>
+                        <button class="option-button btn-secondary p-4 text-left rounded-lg h-full" data-value="Behind-the-Scenes (BTS)">
+                            <h5 class="font-bold">Behind-the-Scenes (BTS)</h5>
+                            <p class="text-xs text-gray-300 mt-1">Menampilkan proses pembuatan produk atau pemotretan untuk membangun kepercayaan.</p>
+                        </button>
+                        <button class="option-button btn-secondary p-4 text-left rounded-lg h-full" data-value="Conceptual/Artistic Photography">
+                            <h5 class="font-bold">Conceptual/Artistic</h5>
+                            <p class="text-xs text-gray-300 mt-1">Lebih artistik dan simbolis, menggambarkan nilai atau filosofi merek.</p>
+                        </button>
+                        <button class="option-button btn-secondary p-4 text-left rounded-lg h-full" data-value="Testimonial/Endorsement Photography">
+                            <h5 class="font-bold">Testimonial/Endorsement</h5>
+                            <p class="text-xs text-gray-300 mt-1">Menampilkan pelanggan nyata atau selebritas yang menggunakan produk untuk kredibilitas.</p>
+                        </button>
+                        <button class="option-button btn-secondary p-4 text-left rounded-lg h-full" data-value="Packshot">
+                            <h5 class="font-bold">Packshot</h5>
+                            <p class="text-xs text-gray-300 mt-1">Gambar produk beserta kemasannya, sering dipakai untuk keperluan e-commerce atau katalog.</p>
+                        </button>
+                    </div>
+
+                    <div class="mb-6">
+                        <h4 class="text-xl font-bold mb-4 text-left">Pilih Rasio Foto</h4>
+                        <div id="photoRatioOptions" class="flex flex-wrap gap-3">
+                            <button class="option-button btn-secondary px-4 py-2 rounded-lg" data-value="1:1 aspect ratio">1:1 (Square)</button>
+                            <button class="option-button btn-secondary px-4 py-2 rounded-lg" data-value="9:16 aspect ratio">9:16 (Vertical)</button>
+                            <button class="option-button btn-secondary px-4 py-2 rounded-lg" data-value="4:5 aspect ratio">4:5 (Portrait)</button>
+                            <button class="option-button btn-secondary px-4 py-2 rounded-lg" data-value="16:9 aspect ratio">16:9 (Landscape)</button>
+                        </div>
+                    </div>
+
+                    <h4 class="text-xl font-bold mb-4 text-left">Skenario Gaya</h4>
+                    <p class="mb-4 text-gray-300">Tuliskan arahan gaya dan skenario yang Anda inginkan dari sutradara kepada model. Ini akan menjadi acuan utama untuk prompt foto.</p>
+                    <textarea id="styleScenarioInput" class="w-full h-32 bg-gray-800/60 rounded-lg p-3 mb-6 focus:ring-2 focus:ring-yellow-400 focus:outline-none" placeholder="Contoh: Saya ingin model terlihat candid, tertawa lepas sambil memegang produk dengan santai. Fokus pada ekspresi kebahagiaan yang natural, bukan pose yang kaku."></textarea>
+                    
+                    <h3 class="text-2xl font-bold mb-4">Prompt Foto Promosi</h3>
+                    <p class="mb-4 text-gray-300">Gunakan tombol di bawah ini untuk membuat prompt yang mendetail untuk foto promosi produk Anda, berdasarkan semua informasi yang telah Anda masukkan.</p>
+                    <button id="generatePhotoPromptBtn" class="w-full btn-primary text-black font-bold py-3 px-6 rounded-lg flex items-center justify-center">
+                        <span id="photoPromptBtnText">Buat Prompt Foto!</span>
+                        <div id="photoPromptLoader" class="loader ml-3 hidden"></div>
+                    </button>
+                    <textarea id="photoPrompt" class="prompt-textarea w-full h-48 mt-4 bg-gray-800/60 rounded-lg p-3 focus:ring-2 focus:ring-yellow-400 focus:outline-none" placeholder="Prompt untuk foto promosi akan muncul di sini..."></textarea>
+                    <button id="copyPhotoPromptBtn" class="mt-4 w-full btn-secondary text-white font-bold py-2 px-4 rounded-lg">Salin Prompt Foto</button>
+                </section>
+
+                <!-- ===== BAGIAN 2.5: HASILKAN FOTO PROMOSI ===== -->
+                <h2 class="text-center text-3xl font-bold border-b-2 border-yellow-400 pb-2 pt-8">Hasilkan Foto Promosi Kamu!</h2>
+                <section id="photoGenerationSection" class="glass-card p-6 md:p-8 text-center">
+                    <button id="generateFinalPhotoButton" class="btn-primary text-black font-bold py-3 px-6 rounded-lg">Hasilkan Foto!</button>
+                    <div id="photoResult" class="hidden mt-6">
+                        <!-- Image generation result will be displayed here -->
+                    </div>
+                </section>
+
+
+                <!-- ===== BAGIAN 3: BANGUN SKENARIO VIDEO ===== -->
+                <h2 id="title-langkah3" class="text-center text-3xl font-bold border-b-2 border-yellow-400 pb-2 pt-8">Langkah 3: Rancang Skenario Video</h2>
+
+                <section id="card-video-type" class="glass-card p-6 md:p-8">
+                    <h3 class="text-2xl font-bold mb-4 flex items-center"><span class="step-number font-black text-4xl mr-4">!</span> Pilih Jenis Video Promosi</h3>
+                    <div id="videoTypeOptions" class="flex flex-wrap gap-3">
+                        <button class="option-button btn-secondary px-3 py-2 text-sm rounded-lg" data-value="Customer Testimonial Video">Video Testimoni Pelanggan</button>
+                        <button class="option-button btn-secondary px-3 py-2 text-sm rounded-lg" data-value="Unboxing Video">Video Unboxing</button>
+                        <button class="option-button btn-secondary px-3 py-2 text-sm rounded-lg" data-value="Product Demo Video">Video Demo Produk</button>
+                        <button class="option-button btn-secondary px-3 py-2 text-sm rounded-lg" data-value="Before-After Video">Video Before-After</button>
+                        <button class="option-button btn-secondary px-3 py-2 text-sm rounded-lg" data-value="Problem-Solution Video">Video Problem-Solution</button>
+                        <button class="option-button btn-secondary px-3 py-2 text-sm rounded-lg" data-value="Influencer Endorsement Video">Video Endorsement Influencer</button>
+                        <button class="option-button btn-secondary px-3 py-2 text-sm rounded-lg" data-value="How-To / Tutorial Video">Video How-To / Tutorial</button>
+                        <button class="option-button btn-secondary px-3 py-2 text-sm rounded-lg" data-value="Review Video">Video Review / Ulasan</button>
+                        <button class="option-button btn-secondary px-3 py-2 text-sm rounded-lg" data-value="Storytelling / Mini Drama Video">Video Storytelling / Mini Drama</button>
+                        <button class="option-button btn-secondary px-3 py-2 text-sm rounded-lg" data-value="Flash Sale / Promo Video">Video Penawaran / Promo Kilat</button>
+                        <button class="option-button btn-secondary px-3 py-2 text-sm rounded-lg" data-value="User Generated Content (UGC) Video">Video User Generated Content (UGC)</button>
+                        <button class="option-button btn-secondary px-3 py-2 text-sm rounded-lg" data-value="Behind The Scene (BTS) Video">Video Behind The Scene (BTS)</button>
+                    </div>
+                </section>
+
+                <section id="card-goal" class="glass-card p-6 md:p-8">
+                    <h3 class="text-2xl font-bold mb-4 flex items-center"><span class="step-number font-black text-4xl mr-4">?</span> Tujuan Video Anda (Opsional)</h3>
+                    <p class="mb-4 text-gray-300">Jelaskan tujuan utama video Anda. Ini akan menjadi rujukan AI untuk membuat semua dialog.</p>
+                    <textarea id="videoGoalInput" class="w-full h-24 bg-gray-800/60 rounded-lg p-3 focus:ring-2 focus:ring-yellow-400 focus:outline-none" placeholder="Contoh: Buatkan video iklan 24 detik untuk produk ini agar audiens merasa produk ini adalah solusi cerdas untuk masalah sehari-hari dan segera ingin membelinya."></textarea>
+                </section>
+
+                <!-- Skenario 1: Pembuka -->
+                <section id="card4" class="glass-card p-6 md:p-8">
+                    <h3 class="text-2xl font-bold mb-4 flex items-center"><span class="step-number font-black text-4xl mr-4">1</span> Skenario 1: Salam Pembuka (0-8 detik)</h3>
+                    <p class="mb-4 text-gray-300">Buat salam pembuka kekinian (maksimal 2 kalimat singkat).</p>
+                    <button id="generateOpeningBtn" class="w-full btn-primary text-black font-bold py-3 px-6 rounded-lg flex items-center justify-center">
+                        <span id="openingBtnText">Buat Pembuka Keren!</span>
+                        <div id="openingLoader" class="loader ml-3 hidden"></div>
+                    </button>
+                    <textarea id="openingLine" class="prompt-textarea w-full h-24 mt-4 bg-gray-800/60 rounded-lg p-3 focus:ring-2 focus:ring-yellow-400 focus:outline-none" placeholder="Kalimat pembuka siap pakai bakal muncul di sini..."></textarea>
+                </section>
+
+                <!-- Skenario 2: Penjelasan -->
+                <section id="card5" class="glass-card p-6 md:p-8">
+                    <h3 class="text-2xl font-bold mb-4 flex items-center"><span class="step-number font-black text-4xl mr-4">2</span> Skenario 2: Penjelasan Produk (8-16 detik)</h3>
+                    <p class="mb-4 text-gray-300">Jelaskan keunggulan produk secara kekinian (maksimal 2 kalimat singkat).</p>
+                    <button id="generateExplanationBtn" class="w-full btn-primary text-black font-bold py-3 px-6 rounded-lg flex items-center justify-center">
+                        <span id="explanationBtnText">Jelasin Keunggulannya!</span>
+                        <div id="explanationLoader" class="loader ml-3 hidden"></div>
+                    </button>
+                    <textarea id="explanation" class="prompt-textarea w-full h-24 mt-4 bg-gray-800/60 rounded-lg p-3 focus:ring-2 focus:ring-yellow-400 focus:outline-none" placeholder="Penjelasan produk siap pakai bakal muncul di sini..."></textarea>
+                </section>
+
+                <!-- Skenario 3: CTA -->
+                <section id="card6" class="glass-card p-6 md:p-8">
+                    <h3 class="text-2xl font-bold mb-4 flex items-center"><span class="step-number font-black text-4xl mr-4">3</span> Skenario 3: Call to Action (16-24 detik)</h3>
+                    <p class="mb-4 text-gray-300">Buat ajakan bertindak yang kekinian (maksimal 2 kalimat singkat).</p>
+                    <button id="generateCtaBtn" class="w-full btn-primary text-black font-bold py-3 px-6 rounded-lg flex items-center justify-center">
+                        <span id="ctaBtnText">Buat CTA Nendang!</span>
+                        <div id="ctaLoader" class="loader ml-3 hidden"></div>
+                    </button>
+                    <textarea id="cta" class="prompt-textarea w-full h-24 mt-4 bg-gray-800/60 rounded-lg p-3 focus:ring-2 focus:ring-yellow-400 focus:outline-none" placeholder="Kalimat ajakan siap pakai bakal muncul di sini..."></textarea>
+                </section>
+
+                <!-- Skenario 4: Interaksi -->
+                <section id="card_scenario4" class="glass-card p-6 md:p-8">
+                    <h3 class="text-2xl font-bold mb-4 flex items-center"><span class="step-number font-black text-4xl mr-4">4</span> Skenario 4: Interaksi Perintah (24-32 detik, Opsional)</h3>
+                    <p class="mb-4 text-gray-300">Hanya untuk 2 grup model. Buat perintah dari Model 1 ke Model 2, sesuai tujuan video.</p>
+                    <button id="generateInteractionBtn" class="w-full btn-primary text-black font-bold py-3 px-6 rounded-lg flex items-center justify-center">
+                        <span id="interactionBtnText">Buat Interaksi Perintah!</span>
+                        <div id="interactionLoader" class="loader ml-3 hidden"></div>
+                    </button>
+                    <textarea id="interactionLine" class="prompt-textarea w-full h-24 mt-4 bg-gray-800/60 rounded-lg p-3 focus:ring-2 focus:ring-yellow-400 focus:outline-none" placeholder="Dialog interaksi akan muncul di sini..."></textarea>
+                </section>
+
+                <!-- Tombol untuk Reveal Prompt -->
+                <section id="confirmationSection" class="glass-card p-6 md:p-8 text-center">
+                    <h3 class="text-xl font-bold mb-4">Apakah Anda Sudah Setuju Dengan Format Dialog Diatas ?</h3>
+                    <p class="text-gray-300 mb-6">Jika tidak, Anda bisa mengedit kembali dialog di atas. Jika ya, lanjutkan untuk melihat prompt final.</p>
+                    <div class="flex justify-center gap-4">
+                        <button id="confirmNoBtn" class="btn-secondary text-white font-bold py-3 px-6 rounded-lg">Tidak, Edit Kembali</button>
+                        <button id="revealPromptBtn" class="btn-primary text-black font-bold py-3 px-6 rounded-lg">Ya, Tampilkan Prompt</button>
+                    </div>
+                </section>
+
+                <div id="step4Container" class="hidden space-y-8">
+                    <!-- ===== BAGIAN 4: PROMPT FINAL ===== -->
+                    <h2 id="title-langkah4" class="text-center text-3xl font-bold border-b-2 border-yellow-400 pb-2 pt-8">Langkah 4: Prompt Final (Versi VEO3)</h2>
+                    <section id="card7" class="mt-4 text-center">
+                        <div class="glass-card p-6 md:p-8">
+                            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                                <!-- Prompt 1 -->
+                                <div id="promptContainer1">
+                                    <h4 class="font-bold text-xl mb-2">Prompt 1 (0-8 detik) Pembuka</h4>
+                                    <textarea id="finalPrompt1" class="prompt-textarea w-full h-96 bg-gray-800/80 rounded-lg p-3 text-base leading-relaxed focus:ring-2 focus:ring-yellow-400 focus:outline-none"></textarea>
+                                    <button id="copyPromptBtn1" class="mt-4 w-full btn-secondary text-white font-bold py-2 px-4 rounded-lg">Salin Prompt 1</button>
+                                </div>
+                                <!-- Prompt 2 -->
+                                 <div id="promptContainer2">
+                                    <h4 class="font-bold text-xl mb-2">Prompt 2 (8-16 detik) Penjelasan</h4>
+                                    <div id="promptContentWrapper2">
+                                        <textarea id="finalPrompt2" class="prompt-textarea w-full h-96 bg-gray-800/80 rounded-lg p-3 text-base leading-relaxed focus:ring-2 focus:ring-yellow-400 focus:outline-none"></textarea>
+                                        <button id="copyPromptBtn2" class="mt-4 w-full btn-secondary text-white font-bold py-2 px-4 rounded-lg">Salin Prompt 2</button>
+                                    </div>
+                                </div>
+                                <!-- Prompt 3 -->
+                                 <div id="promptContainer3">
+                                    <h4 class="font-bold text-xl mb-2">Prompt 3 (16-24 detik) CTA</h4>
+                                    <div id="promptContentWrapper3">
+                                        <textarea id="finalPrompt3" class="prompt-textarea w-full h-96 bg-gray-800/80 rounded-lg p-3 text-base leading-relaxed focus:ring-2 focus:ring-yellow-400 focus:outline-none"></textarea>
+                                        <button id="copyPromptBtn3" class="mt-4 w-full btn-secondary text-white font-bold py-2 px-4 rounded-lg">Salin Prompt 3</button>
+                                    </div>
+                                </div>
+                                <!-- Prompt 4 -->
+                                <div id="promptContainer4">
+                                    <h4 class="font-bold text-xl mb-2">Prompt 4 (24-32 detik) Interaksi</h4>
+                                    <div id="promptContentWrapper4">
+                                        <textarea id="finalPrompt4" class="prompt-textarea w-full h-96 bg-gray-800/80 rounded-lg p-3 text-base leading-relaxed focus:ring-2 focus:ring-yellow-400 focus:outline-none"></textarea>
+                                        <button id="copyPromptBtn4" class="mt-4 w-full btn-secondary text-white font-bold py-2 px-4 rounded-lg">Salin Prompt 4</button>
+                                    </div>
+                                </div>
+                            </div>
+                            <div id="copySuccessMessage" class="mt-4 text-green-400 font-semibold opacity-0 transition-opacity duration-300">Prompt berhasil disalin!</div>
+                        </div>
+                    </section>
+                </div>
+                
+                <!-- ===== BAGIAN 5: GENERATE VIDEO ===== -->
+                <h2 id="title-langkah5" class="text-center text-3xl font-bold border-b-2 border-yellow-400 pb-2 pt-8">Langkah 5: Generate Video</h2>
+                <section id="card8" class="glass-card p-6 md:p-8 text-center">
+                    <button id="generateVideoBtn" class="btn-primary text-black font-bold py-4 px-8 rounded-lg text-xl">
+                        Generate Video!
+                    </button>
+                    <div id="videoPreviewContainer" class="hidden mt-6">
+                        <div id="videoLoaderContainer" class="flex flex-col items-center justify-center">
+                            <div class="loader" style="width: 50px; height: 50px; border-top-color: #FFD93D;"></div>
+                            <p id="videoStatusText" class="mt-4 text-lg text-gray-300">Generating your video... this might take a moment.</p>
+                        </div>
+                        <div id="videoResultContainer" class="hidden">
+                            <!-- Content will be replaced by JS -->
+                        </div>
+                    </div>
+                </section>
+
+            </div>
+        </div>
+    </div>
+
+    <!-- Password Modal -->
+    <div id="passwordModal" class="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center hidden z-50">
+        <div class="bg-gray-800 p-8 rounded-lg shadow-xl text-center w-11/12 max-w-md">
+            <h3 id="passwordModalTitle" class="text-xl font-bold mb-4">Akses Terbatas</h3>
+            <p id="passwordModalDescription" class="text-gray-400 mb-4">Untuk melanjutkan, silakan masukkan kata sandi.</p>
+            
+            <input type="password" id="passwordInput" class="w-full bg-gray-700 rounded-lg p-3 mb-4 focus:ring-2 focus:ring-yellow-400 focus:outline-none text-white" placeholder="Kata Sandi">
+            <p id="passwordError" class="text-red-400 text-sm h-4 mb-2"></p>
+            <button id="submitPasswordBtn" class="w-full btn-primary text-black font-bold py-2 px-4 rounded-lg">Buka Akses</button>
+            
+            <div class="my-4 border-t border-gray-600"></div>
+
+            <h4 class="font-semibold mb-3">Butuh Bantuan atau Akses Penuh?</h4>
+            <input type="text" id="contactNameInput" class="w-full bg-gray-700 rounded-lg p-3 mb-2 focus:ring-2 focus:ring-yellow-400 focus:outline-none text-white" placeholder="Nama Anda">
+            <input type="text" id="contactBusinessInput" class="w-full bg-gray-800/60 rounded-lg p-3 mb-4 focus:ring-2 focus:ring-yellow-400 focus:outline-none text-white" placeholder="Nama Usaha">
+
+            <div class="flex justify-between items-center mt-4">
+                <a href="#" id="contactIwanBtn" class="text-yellow-400 hover:text-yellow-300 font-semibold">Hubungi Iwan</a>
+                <button id="closeModalBtn" class="text-gray-400 hover:text-white text-sm">Tutup</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Donation Modal -->
+    <div id="donationModal" class="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center hidden z-50">
+        <div class="bg-gray-800 p-8 rounded-lg shadow-xl text-center w-11/12 max-w-md">
+            <img src="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEj57CM6kRV0djGYROItcBFPEZG1I2AlSw2tYwyy75B2X4Ysm8X0JHNkE3pvp7ZmoyxPFknNR_ap7K3CKyXESigCV2AtA2pzu2isa-kfu-uVnSIveB8Mrpjn0mRYABYbVGLMkfaJNSqKg7zPjHzCVvaUeJ8-VI5p487cjqUa9btzPcQjTS-TKKNVGs_GKRk/s1600/WhatsApp%20Image%202025-08-03%20at%2014.23.26.jpeg" alt="QRIS Donasi" class="mx-auto rounded-lg mb-4" style="max-width: 250px;">
+            <h4 class="font-bold text-lg text-yellow-300">QRIS DONATION</h4>
+            <p class="text-gray-300 text-sm mt-2">(Rp 25.000 / 2 pcs Ai Image & Rp 100.000 / 1 pcs Ai Video)</p>
+            <button id="closeDonationModalBtn" class="mt-6 btn-secondary text-white font-bold py-2 px-4 rounded-lg">Tutup</button>
+        </div>
+    </div>
+    
+    <!-- Tutorial Modal -->
+    <div id="tutorialModal" class="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center hidden z-50 p-4">
+        <div class="bg-gray-800 p-8 rounded-lg shadow-xl w-full max-w-3xl max-h-[90vh] overflow-y-auto">
+            <div id="tutorialModalContent" class="text-left">
+                <h1 class="text-3xl font-bold mb-4 text-yellow-300">Panduan Lengkap: Aplikasi Pembuat Gambar dan Video Promosi</h1>
+                
+                <h2>1. Memahami Teknologi di Balik Layar</h2>
+                <h3>Apa itu Gemini?</h3>
+                <p><strong>Gemini</strong> adalah model kecerdasan buatan (AI) canggih dari Google. Anggap saja Gemini sebagai "otak" kreatif di balik aplikasi ini. Ketika Anda memberikan perintah atau mengunggah gambar, Gemini-lah yang menganalisis, memahami, dan kemudian menghasilkan teks deskriptif, ide skenario, hingga gambar promosi yang menakjubkan. Kemampuannya untuk memahami konteks dan menghasilkan konten yang relevan adalah inti dari kekuatan aplikasi ini.</p>
+                <h3>Apa itu Canvas?</h3>
+                <p><strong>Canvas</strong> adalah ruang kerja interaktif tempat aplikasi ini ditampilkan. Area di sebelah kanan Anda, tempat Anda melihat dan berinteraksi dengan formulir aplikasi, adalah Canvas. Ini adalah lingkungan kolaboratif di mana Anda bisa memasukkan ide, dan AI (melalui saya, Gemini) akan merespons dengan membangun dan memperbarui aplikasi langsung di ruang kerja tersebut.</p>
+                
+                <h2>2. Fungsi dan Kegunaan Aplikasi</h2>
+                <p><strong>Aplikasi Pembuat Gambar dan Video Promosi</strong> ini dirancang sebagai asisten sutradara cerdas Anda. Tujuannya adalah untuk menyederhanakan proses kompleks dalam pembuatan konsep promosi, mulai dari ide awal hingga menjadi <em>prompt</em> (perintah) siap pakai untuk AI generator.</p>
+                <ul>
+                    <li><strong>Menerjemahkan Visi:</strong> Mengubah ide-ide visual (seperti foto model, produk, dan lokasi) menjadi deskripsi teks yang detail.</li>
+                    <li><strong>Membangun Skenario:</strong> Menciptakan alur cerita dan dialog yang menarik untuk video promosi singkat.</li>
+                    <li><strong>Menghasilkan Prompt Final:</strong> Menggabungkan semua elemen (model, produk, suasana, skenario) menjadi <em>prompt</em> siap pakai yang bisa langsung digunakan pada platform AI generator gambar dan video.</li>
+                    <li><strong>Menghasilkan Gambar Promosi:</strong> Terhubung langsung dengan AI generator gambar untuk menciptakan foto promosi berdasarkan <em>prompt</em> yang telah Anda buat.</li>
+                </ul>
+                
+                <h2>3. Tutorial Penggunaan Aplikasi</h2>
+                <h3>Langkah 1: Persiapan Dasar Proyek</h3>
+                <ol class="list-decimal pl-6">
+                    <li><strong>Judul Proyek:</strong> Beri nama proyek Anda agar mudah dikenali.</li>
+                    <li><strong>Nama Sutradara:</strong> Masukkan nama Anda atau sutradara yang bertanggung jawab.</li>
+                    <li><strong>Nomor ID Akses:</strong> Masukkan ID yang Anda miliki. Jika belum punya, klik tombol <strong>"Minta ID Akses"</strong> di bagian atas untuk melihat informasi donasi dan cara mendapatkannya.</li>
+                </ol>
+                
+                <h3>Langkah 2: Deskripsikan Karakter (Model)</h3>
+                <ol class="list-decimal pl-6">
+                    <li><strong>Upload Foto:</strong> Di <strong>Grup Model 1</strong>, klik area unggah untuk memilih foto model utama Anda.</li>
+                    <li><strong>Isi Detail (Opsional tapi Direkomendasikan):</strong> Masukkan detail seperti nama karakter, peran, suku, usia, dll. Semakin lengkap, semakin baik AI memahami konteks.</li>
+                    <li><strong>Pilih Atribut Fisik:</strong> Klik tombol-tombol pilihan untuk warna kulit, bentuk wajah, mata, hidung, dan gaya rambut.</li>
+                    <li><strong>Deskripsi Outfit:</strong> Tulis deskripsi pakaian yang Anda inginkan untuk model tersebut.</li>
+                    <li><strong>Jadiin Deskripsi!:</strong> Tekan tombol ini. AI akan menganalisis foto dan semua masukan Anda untuk membuat deskripsi karakter yang detail.</li>
+                    <li><strong>Tambah Grup Model (Opsional):</strong> Jika promosi Anda melibatkan lebih dari satu model atau grup, klik <strong>"Tambah Grup Model"</strong> dan ulangi proses di atas.</li>
+                </ol>
+                
+                <h3>Langkah 3: Deskripsikan Produk & Lokasi</h3>
+                <ol class="list-decimal pl-6">
+                    <li><strong>Jelaskan Produk Anda:</strong> Masukkan nama produk atau unggah gambarnya, lalu klik <strong>"Detailin Produknya!"</strong>.</li>
+                    <li><strong>Atur Tempat dan Suasana:</strong>
+                        <ul class="list-disc pl-6">
+                            <li><strong>Setting Tempat:</strong> Tulis deskripsi lokasi atau unggah gambar referensi dan biarkan AI mendeskripsikannya untuk Anda.</li>
+                            <li><strong>Pilih Opsi Suasana:</strong> Klik tombol-tombol pilihan untuk Suasana, Teknik Kamera, Efek Angin, Pencahayaan, dan lainnya untuk membangun <em>mood</em> yang diinginkan.</li>
+                            <li><strong>Jadikan Deskripsi Suasana:</strong> Setelah memilih opsi, klik tombol ini agar AI merangkumnya menjadi deskripsi atmosfer yang kohesif.</li>
+                        </ul>
+                    </li>
+                </ol>
+
+                <h3>Langkah 4: Rancang dan Hasilkan Foto Promosi</h3>
+                <ol class="list-decimal pl-6">
+                    <li><strong>Pilih Jenis & Rasio Foto:</strong> Tentukan jenis foto (misalnya, <em>Lifestyle</em> atau <em>Product Shot</em>) dan rasio yang sesuai (misalnya, 9:16 untuk Story).</li>
+                    <li><strong>Skenario Gaya:</strong> Tulis arahan singkat untuk gaya foto yang Anda inginkan (misalnya, "model tertawa candid sambil melihat ke arah kamera").</li>
+                    <li><strong>Buat Prompt Foto!:</strong> Klik tombol ini. Aplikasi akan menggabungkan semua informasi dari Langkah 1-4 menjadi satu <em>prompt</em> foto yang siap pakai.</li>
+                    <li><strong>Salin Prompt (Opsional):</strong> Anda bisa menyalin <em>prompt</em> ini untuk digunakan di platform lain.</li>
+                    <li><strong>Hasilkan Foto!:</strong> Buka bagian <strong>"Hasilkan Foto Promosi Kamu!"</strong>, lalu klik tombol <strong>"Hasilkan Foto!"</strong>. Setelah melalui <em>popup</em> donasi dan kata sandi, AI akan mulai membuat gambar berdasarkan <em>prompt</em> Anda.</li>
+                </ol>
+
+                <h3>Langkah 5: Rancang Skenario Video</h3>
+                <ol class="list-decimal pl-6">
+                    <li><strong>Pilih Jenis Video:</strong> Tentukan jenis video promosi yang ingin Anda buat (misalnya, Testimoni atau Unboxing).</li>
+                    <li><strong>Tujuan Video (Opsional):</strong> Jelaskan secara singkat tujuan akhir dari video Anda.</li>
+                    <li><strong>Buat Dialog:</strong> Klik tombol "Buat..." pada setiap bagian skenario (Pembuka, Penjelasan, CTA) untuk menghasilkan dialog secara otomatis. Anda bisa mengedit hasilnya jika perlu.</li>
+                </ol>
+
+                <h3>Langkah 6: Dapatkan Prompt Video Final</h3>
+                <ol class="list-decimal pl-6">
+                    <li><strong>Tampilkan Prompt:</strong> Klik tombol <strong>"Ya, Tampilkan Prompt"</strong>.</li>
+                    <li><strong>Lihat & Salin:</strong> Prompt 1 akan langsung terlihat. Anda bisa langsung menyalinnya. Untuk melihat Prompt 2, 3, dan 4, klik area yang samar, tutup <em>popup</em> donasi, lalu masukkan kata sandi "bismillah".</li>
+                </ol>
+
+                <h3>Langkah 7: Generate Video</h3>
+                <ol class="list-decimal pl-6">
+                    <li><strong>Generate Video!:</strong> Buka bagian <strong>"Generate Video"</strong> dan klik tombolnya.</li>
+                    <li><strong>Hubungi Admin:</strong> Ikuti petunjuk yang muncul untuk melanjutkan proses pembuatan video dengan admin.</li>
+                </ol>
+
+                <h2>4. Tutorial Cara Membuat Aplikasi Serupa dengan Cepat</h2>
+                <p>Aplikasi ini mungkin terlihat kompleks, tetapi sebenarnya dibangun menggunakan teknologi web standar yang bisa Anda pelajari. Berikut adalah kerangka dasarnya:</p>
+                <ol class="list-decimal pl-6">
+                    <li><strong>Struktur (HTML):</strong> Seluruh tampilan, formulir, tombol, dan area teks dibuat menggunakan HTML. Ini adalah fondasi yang menyusun semua elemen visual.</li>
+                    <li><strong>Tampilan (Tailwind CSS):</strong> Untuk membuat tampilan terlihat modern dan responsif dengan cepat, aplikasi ini menggunakan <strong>Tailwind CSS</strong>. Ini adalah <em>framework</em> CSS yang memungkinkan Anda mendesain langsung di dalam file HTML tanpa menulis file CSS terpisah. Gradasi warna, efek kartu kaca (<em>glass card</em>), dan tata letak semuanya diatur dengan Tailwind.</li>
+                    <li><strong>Logika (JavaScript):</strong> "Otak" dari sisi pengguna ada di JavaScript. Semua interaksi—seperti saat Anda mengklik tombol, mengunggah gambar, atau menampilkan <em>popup</em>—dikendalikan oleh JavaScript.</li>
+                    <li><strong>Kecerdasan Buatan (Gemini API):</strong> Bagian paling canggih adalah integrasi dengan <strong>Gemini API</strong>. Ketika Anda menekan tombol seperti "Jadiin Deskripsi!" atau "Buat Prompt Foto!", JavaScript akan mengirimkan semua informasi yang Anda masukkan ke server Google. Gemini kemudian memproses informasi tersebut dan mengirimkan kembali hasilnya dalam bentuk teks, yang kemudian ditampilkan di layar Anda. Proses yang sama berlaku untuk pembuatan gambar, di mana <em>prompt</em> dikirim ke <strong>Imagen 3 API</strong> (model generator gambar dari Google).</li>
+                </ol>
+            </div>
+            <button id="closeTutorialModalBtn" class="mt-6 w-full btn-primary text-black font-bold py-2 px-4 rounded-lg">Tutup</button>
+        </div>
+    </div>
+
+
+    <script>
+        // Define initial state to easily reset
+        const initialState = {
+            videoTitle: '',
+            directorName: '',
+            generatedAccessId: null,
+            modelCount1: 1, imageDescription1: '', base64Image1: null, outfit1: '', ethnicity1: '', age1: '', weight1: '', characterName1: '', characterRole1: '', nationality1: '', outfitId1: '', outfitColor1: '', skinColor1: '', faceShape1: '', eyesShape1: '', noseShape1: '', hairStyle1: '', specialAttributes1: '', property1: '',
+            modelCount2: 1, imageDescription2: '', base64Image2: null, outfit2: '', ethnicity2: '', age2: '', weight2: '', characterName2: '', characterRole2: '', nationality2: '', outfitId2: '', outfitColor2: '', skinColor2: '', faceShape2: '', eyesShape2: '', noseShape2: '', hairStyle2: '', specialAttributes2: '', property2: '',
+            modelCount3: 1, imageDescription3: '', base64Image3: null, outfit3: '', ethnicity3: '', age3: '', weight3: '', characterName3: '', characterRole3: '', nationality3: '', outfitId3: '', outfitColor3: '', skinColor3: '', faceShape3: '', eyesShape3: '', noseShape3: '', hairStyle3: '', specialAttributes3: '', property3: '',
+            modelCount4: 1, imageDescription4: '', base64Image4: null, outfit4: '', ethnicity4: '', age4: '', weight4: '', characterName4: '', characterRole4: '', nationality4: '', outfitId4: '', outfitColor4: '', skinColor4: '', faceShape4: '', eyesShape4: '', noseShape4: '', hairStyle4: '', specialAttributes4: '', property4: '',
+            isGroup2Active: false, isGroup3Active: false, isGroup4Active: false,
+            modelActivity: '',
+            sharedProperty: '',
+            productDescription: '',
+            serviceDescription: '',
+            brandName: '',
+            base64ProductImage: null,
+            location: '',
+            region: '',
+            placeName: '',
+            mood: '',
+            windEffect: '',
+            lighting: '',
+            cameraTechnique: '',
+            timeOfDay: '',
+            temperature: '',
+            music: '',
+            audioMix: '',
+            moodDescription: '',
+            photoType: '',
+            photoRatio: '',
+            styleScenario: '',
+            photoPrompt: '',
+            videoGoal: '',
+            videoType: '',
+            openingLine: '',
+            explanation: '',
+            cta: '',
+            interactionLine: '',
+            base64LocationImage: null,
+            promptsLocked: true,
+        };
+
+        // State management - create a mutable copy
+        let state = { ...initialState };
+        let onPasswordSuccessCallback = null;
+        let onDonationModalCloseCallback = null;
+
+        // Element selectors
+        const elements = {
+            resetBtn: document.getElementById('resetBtn'),
+            exitBtn: document.getElementById('exitBtn'),
+            formContainer: document.getElementById('form-container'),
+            videoTitleInput: document.getElementById('videoTitleInput'),
+            directorNameInput: document.getElementById('directorNameInput'),
+            accessIdCard: document.getElementById('card-access-id'),
+            accessIdInput: document.getElementById('accessIdInput'),
+            submitAccessIdBtn: document.getElementById('submitAccessIdBtn'),
+            requestAccessIdBtn: document.getElementById('requestAccessIdBtn'),
+            accessIdError: document.getElementById('accessIdError'),
+            // Model Group 1
+            decreaseModelBtn1: document.getElementById('decreaseModelBtn1'),
+            increaseModelBtn1: document.getElementById('increaseModelBtn1'),
+            modelCount1: document.getElementById('modelCount1'),
+            imageUpload1: document.getElementById('imageUpload1'),
+            imagePreview1: document.getElementById('imagePreview1'),
+            uploadText1: document.getElementById('uploadText1'),
+            characterNameInput1: document.getElementById('characterNameInput1'),
+            characterRoleInput1: document.getElementById('characterRoleInput1'),
+            nationalityInput1: document.getElementById('nationalityInput1'),
+            ethnicityInput1: document.getElementById('ethnicityInput1'),
+            ageInput1: document.getElementById('ageInput1'),
+            weightInput1: document.getElementById('weightInput1'),
+            outfitIdInput1: document.getElementById('outfitIdInput1'),
+            outfitColorInput1: document.getElementById('outfitColorInput1'),
+            outfitInput1: document.getElementById('outfitInput1'),
+            outfitImageUpload1: document.getElementById('outfitImageUpload1'),
+            generateOutfitDescBtn1: document.getElementById('generateOutfitDescBtn1'),
+            outfitBtnText1: document.getElementById('outfitBtnText1'),
+            outfitLoader1: document.getElementById('outfitLoader1'),
+            specialAttributesInput1: document.getElementById('specialAttributesInput1'),
+            propertyInput1: document.getElementById('propertyInput1'),
+            skinColorOptions1: document.getElementById('skinColorOptions1'),
+            faceShapeOptions1: document.getElementById('faceShapeOptions1'),
+            eyesShapeOptions1: document.getElementById('eyesShapeOptions1'),
+            noseShapeOptions1: document.getElementById('noseShapeOptions1'),
+            hairStyleOptions1: document.getElementById('hairStyleOptions1'),
+            generateDescBtn1: document.getElementById('generateDescBtn1'),
+            descBtnText1: document.getElementById('descBtnText1'),
+            descLoader1: document.getElementById('descLoader1'),
+            imageDescription1: document.getElementById('imageDescription1'),
+            // Model Group 2
+            modelGroup2: document.getElementById('modelGroup2'),
+            removeGroup2Btn: document.getElementById('removeGroup2Btn'),
+            decreaseModelBtn2: document.getElementById('decreaseModelBtn2'),
+            increaseModelBtn2: document.getElementById('increaseModelBtn2'),
+            modelCount2: document.getElementById('modelCount2'),
+            imageUpload2: document.getElementById('imageUpload2'),
+            imagePreview2: document.getElementById('imagePreview2'),
+            uploadText2: document.getElementById('uploadText2'),
+            characterNameInput2: document.getElementById('characterNameInput2'),
+            characterRoleInput2: document.getElementById('characterRoleInput2'),
+            nationalityInput2: document.getElementById('nationalityInput2'),
+            ethnicityInput2: document.getElementById('ethnicityInput2'),
+            ageInput2: document.getElementById('ageInput2'),
+            weightInput2: document.getElementById('weightInput2'),
+            outfitIdInput2: document.getElementById('outfitIdInput2'),
+            outfitColorInput2: document.getElementById('outfitColorInput2'),
+            outfitInput2: document.getElementById('outfitInput2'),
+            outfitImageUpload2: document.getElementById('outfitImageUpload2'),
+            generateOutfitDescBtn2: document.getElementById('generateOutfitDescBtn2'),
+            outfitBtnText2: document.getElementById('outfitBtnText2'),
+            outfitLoader2: document.getElementById('outfitLoader2'),
+            specialAttributesInput2: document.getElementById('specialAttributesInput2'),
+            propertyInput2: document.getElementById('propertyInput2'),
+            skinColorOptions2: document.getElementById('skinColorOptions2'),
+            faceShapeOptions2: document.getElementById('faceShapeOptions2'),
+            eyesShapeOptions2: document.getElementById('eyesShapeOptions2'),
+            noseShapeOptions2: document.getElementById('noseShapeOptions2'),
+            hairStyleOptions2: document.getElementById('hairStyleOptions2'),
+            generateDescBtn2: document.getElementById('generateDescBtn2'),
+            descBtnText2: document.getElementById('descBtnText2'),
+            descLoader2: document.getElementById('descLoader2'),
+            imageDescription2: document.getElementById('imageDescription2'),
+             // Model Group 3
+            modelGroup3: document.getElementById('modelGroup3'),
+            removeGroup3Btn: document.getElementById('removeGroup3Btn'),
+            decreaseModelBtn3: document.getElementById('decreaseModelBtn3'),
+            increaseModelBtn3: document.getElementById('increaseModelBtn3'),
+            modelCount3: document.getElementById('modelCount3'),
+            imageUpload3: document.getElementById('imageUpload3'),
+            imagePreview3: document.getElementById('imagePreview3'),
+            uploadText3: document.getElementById('uploadText3'),
+            characterNameInput3: document.getElementById('characterNameInput3'),
+            characterRoleInput3: document.getElementById('characterRoleInput3'),
+            nationalityInput3: document.getElementById('nationalityInput3'),
+            ethnicityInput3: document.getElementById('ethnicityInput3'),
+            ageInput3: document.getElementById('ageInput3'),
+            weightInput3: document.getElementById('weightInput3'),
+            outfitIdInput3: document.getElementById('outfitIdInput3'),
+            outfitColorInput3: document.getElementById('outfitColorInput3'),
+            outfitInput3: document.getElementById('outfitInput3'),
+            outfitImageUpload3: document.getElementById('outfitImageUpload3'),
+            generateOutfitDescBtn3: document.getElementById('generateOutfitDescBtn3'),
+            outfitBtnText3: document.getElementById('outfitBtnText3'),
+            outfitLoader3: document.getElementById('outfitLoader3'),
+            specialAttributesInput3: document.getElementById('specialAttributesInput3'),
+            propertyInput3: document.getElementById('propertyInput3'),
+            skinColorOptions3: document.getElementById('skinColorOptions3'),
+            faceShapeOptions3: document.getElementById('faceShapeOptions3'),
+            eyesShapeOptions3: document.getElementById('eyesShapeOptions3'),
+            noseShapeOptions3: document.getElementById('noseShapeOptions3'),
+            hairStyleOptions3: document.getElementById('hairStyleOptions3'),
+            generateDescBtn3: document.getElementById('generateDescBtn3'),
+            descBtnText3: document.getElementById('descBtnText3'),
+            descLoader3: document.getElementById('descLoader3'),
+            imageDescription3: document.getElementById('imageDescription3'),
+             // Model Group 4
+            modelGroup4: document.getElementById('modelGroup4'),
+            removeGroup4Btn: document.getElementById('removeGroup4Btn'),
+            decreaseModelBtn4: document.getElementById('decreaseModelBtn4'),
+            increaseModelBtn4: document.getElementById('increaseModelBtn4'),
+            modelCount4: document.getElementById('modelCount4'),
+            imageUpload4: document.getElementById('imageUpload4'),
+            imagePreview4: document.getElementById('imagePreview4'),
+            uploadText4: document.getElementById('uploadText4'),
+            characterNameInput4: document.getElementById('characterNameInput4'),
+            characterRoleInput4: document.getElementById('characterRoleInput4'),
+            nationalityInput4: document.getElementById('nationalityInput4'),
+            ethnicityInput4: document.getElementById('ethnicityInput4'),
+            ageInput4: document.getElementById('ageInput4'),
+            weightInput4: document.getElementById('weightInput4'),
+            outfitIdInput4: document.getElementById('outfitIdInput4'),
+            outfitColorInput4: document.getElementById('outfitColorInput4'),
+            outfitInput4: document.getElementById('outfitInput4'),
+            outfitImageUpload4: document.getElementById('outfitImageUpload4'),
+            generateOutfitDescBtn4: document.getElementById('generateOutfitDescBtn4'),
+            outfitBtnText4: document.getElementById('outfitBtnText4'),
+            outfitLoader4: document.getElementById('outfitLoader4'),
+            specialAttributesInput4: document.getElementById('specialAttributesInput4'),
+            propertyInput4: document.getElementById('propertyInput4'),
+            skinColorOptions4: document.getElementById('skinColorOptions4'),
+            faceShapeOptions4: document.getElementById('faceShapeOptions4'),
+            eyesShapeOptions4: document.getElementById('eyesShapeOptions4'),
+            noseShapeOptions4: document.getElementById('noseShapeOptions4'),
+            hairStyleOptions4: document.getElementById('hairStyleOptions4'),
+            generateDescBtn4: document.getElementById('generateDescBtn4'),
+            descBtnText4: document.getElementById('descBtnText4'),
+            descLoader4: document.getElementById('descLoader4'),
+            imageDescription4: document.getElementById('imageDescription4'),
+            addGroupBtn: document.getElementById('addGroupBtn'),
+            // Shared Property
+            sharedPropertyInput: document.getElementById('sharedPropertyInput'),
+            // Model Activity
+            modelActivityInput: document.getElementById('modelActivityInput'),
+            // Card 2
+            brandNameInput: document.getElementById('brandNameInput'),
+            productInput: document.getElementById('productInput'),
+            serviceDescriptionInput: document.getElementById('serviceDescriptionInput'),
+            productImageUpload: document.getElementById('productImageUpload'),
+            productUploadText: document.getElementById('productUploadText'),
+            productImagePreview: document.getElementById('productImagePreview'),
+            generateProductDescBtn: document.getElementById('generateProductDescBtn'),
+            productBtnText: document.getElementById('productBtnText'),
+            productLoader: document.getElementById('productLoader'),
+            productDescription: document.getElementById('productDescription'),
+            // Card 3
+            regionInput: document.getElementById('regionInput'),
+            placeNameInput: document.getElementById('placeNameInput'),
+            locationDescriptionTextarea: document.getElementById('locationDescriptionTextarea'),
+            moodOptions: document.getElementById('moodOptions'),
+            windEffectOptions: document.getElementById('windEffectOptions'),
+            lightingOptions: document.getElementById('lightingOptions'),
+            cameraTechniqueOptions: document.getElementById('cameraTechniqueOptions'),
+            timeOfDayOptions: document.getElementById('timeOfDayOptions'),
+            temperatureOptions: document.getElementById('temperatureOptions'),
+            generateMusicBtn: document.getElementById('generateMusicBtn'),
+            musicBtnText: document.getElementById('musicBtnText'),
+            musicLoader: document.getElementById('musicLoader'),
+            musicSuggestions: document.getElementById('musicSuggestions'),
+            audioMixOptions: document.getElementById('audioMixOptions'),
+            generateMoodDescBtn: document.getElementById('generateMoodDescBtn'),
+            moodDescBtnText: document.getElementById('moodDescBtnText'),
+            moodDescLoader: document.getElementById('moodDescLoader'),
+            moodDescription: document.getElementById('moodDescription'),
+            locationImageUpload: document.getElementById('locationImageUpload'),
+            locationUploadText: document.getElementById('locationUploadText'),
+            locationImagePreview: document.getElementById('locationImagePreview'),
+            generateLocationBtn: document.getElementById('generateLocationBtn'),
+            locationBtnText: document.getElementById('locationBtnText'),
+            locationLoader: document.getElementById('locationLoader'),
+            // Photo Prompt Section
+            photoTypeOptions: document.getElementById('photoTypeOptions'),
+            photoRatioOptions: document.getElementById('photoRatioOptions'),
+            styleScenarioInput: document.getElementById('styleScenarioInput'),
+            generatePhotoPromptBtn: document.getElementById('generatePhotoPromptBtn'),
+            photoPromptBtnText: document.getElementById('photoPromptBtnText'),
+            photoPromptLoader: document.getElementById('photoPromptLoader'),
+            photoPrompt: document.getElementById('photoPrompt'),
+            copyPhotoPromptBtn: document.getElementById('copyPhotoPromptBtn'),
+            // Photo Generation Section
+            generateFinalPhotoButton: document.getElementById('generateFinalPhotoButton'),
+            photoResult: document.getElementById('photoResult'),
+            // Card 4 & Scenarios
+            videoGoalInput: document.getElementById('videoGoalInput'),
+            videoTypeOptions: document.getElementById('videoTypeOptions'),
+            generateOpeningBtn: document.getElementById('generateOpeningBtn'),
+            openingBtnText: document.getElementById('openingBtnText'),
+            openingLoader: document.getElementById('openingLoader'),
+            openingLine: document.getElementById('openingLine'),
+            generateExplanationBtn: document.getElementById('generateExplanationBtn'),
+            explanationBtnText: document.getElementById('explanationBtnText'),
+            explanationLoader: document.getElementById('explanationLoader'),
+            explanation: document.getElementById('explanation'),
+            generateCtaBtn: document.getElementById('generateCtaBtn'),
+            ctaBtnText: document.getElementById('ctaBtnText'),
+            ctaLoader: document.getElementById('ctaLoader'),
+            cta: document.getElementById('cta'),
+            generateInteractionBtn: document.getElementById('generateInteractionBtn'),
+            interactionBtnText: document.getElementById('interactionBtnText'),
+            interactionLoader: document.getElementById('interactionLoader'),
+            interactionLine: document.getElementById('interactionLine'),
+            // Final Prompts
+            step4Container: document.getElementById('step4Container'),
+            confirmationSection: document.getElementById('confirmationSection'),
+            confirmNoBtn: document.getElementById('confirmNoBtn'),
+            revealPromptBtn: document.getElementById('revealPromptBtn'),
+            finalPrompt1: document.getElementById('finalPrompt1'),
+            finalPrompt2: document.getElementById('finalPrompt2'),
+            finalPrompt3: document.getElementById('finalPrompt3'),
+            finalPrompt4: document.getElementById('finalPrompt4'),
+            promptContainer1: document.getElementById('promptContainer1'),
+            promptContentWrapper2: document.getElementById('promptContentWrapper2'),
+            promptContentWrapper3: document.getElementById('promptContentWrapper3'),
+            promptContentWrapper4: document.getElementById('promptContentWrapper4'),
+            copyPromptBtn1: document.getElementById('copyPromptBtn1'),
+            copyPromptBtn2: document.getElementById('copyPromptBtn2'),
+            copyPromptBtn3: document.getElementById('copyPromptBtn3'),
+            copyPromptBtn4: document.getElementById('copyPromptBtn4'),
+            copySuccessMessage: document.getElementById('copySuccessMessage'),
+            // Video Generation
+            generateVideoBtn: document.getElementById('generateVideoBtn'),
+            videoPreviewContainer: document.getElementById('videoPreviewContainer'),
+            videoLoaderContainer: document.getElementById('videoLoaderContainer'),
+            videoResultContainer: document.getElementById('videoResultContainer'),
+            // Password Modal
+            passwordModal: document.getElementById('passwordModal'),
+            passwordModalTitle: document.getElementById('passwordModalTitle'),
+            passwordModalDescription: document.getElementById('passwordModalDescription'),
+            passwordInput: document.getElementById('passwordInput'),
+            passwordError: document.getElementById('passwordError'),
+            submitPasswordBtn: document.getElementById('submitPasswordBtn'),
+            closeModalBtn: document.getElementById('closeModalBtn'),
+            contactNameInput: document.getElementById('contactNameInput'),
+            contactBusinessInput: document.getElementById('contactBusinessInput'),
+            contactIwanBtn: document.getElementById('contactIwanBtn'),
+            // Donation Modal
+            donationModal: document.getElementById('donationModal'),
+            closeDonationModalBtn: document.getElementById('closeDonationModalBtn'),
+            // Tutorial Modal
+            tutorialBtn: document.getElementById('tutorialBtn'),
+            tutorialModal: document.getElementById('tutorialModal'),
+            closeTutorialModalBtn: document.getElementById('closeTutorialModalBtn'),
+            // Cards for scrolling
+            card2: document.getElementById('card2'),
+            card3: document.getElementById('card3'),
+            titleLangkah2: document.getElementById('title-langkah2'),
+            titleLangkah3: document.getElementById('title-langkah3'),
+            card5: document.getElementById('card5'),
+            card6: document.getElementById('card6'),
+            titleLangkah4: document.getElementById('title-langkah4'),
+        };
+
+        // --- Utility for API calls with backoff ---
+        async function fetchWithBackoff(url, options, retries = 5, delay = 1000) {
+            for (let i = 0; i < retries; i++) {
+                try {
+                    const response = await fetch(url, options);
+                    if (response.status === 429 || response.status >= 500) { // Throttling or server error
+                        if (i === retries - 1) throw new Error(`API request failed after ${retries} retries with status ${response.status}`);
+                        await new Promise(resolve => setTimeout(resolve, delay * Math.pow(2, i)));
+                        continue; // Retry
+                    }
+                    return response; // Success
+                } catch (error) {
+                    if (i === retries - 1) throw error; // Last retry failed
+                    await new Promise(resolve => setTimeout(resolve, delay * Math.pow(2, i)));
+                }
+            }
+        }
+
+        // --- Gemini API Call Function ---
+        async function callGemini(prompt, image = null) {
+            const apiKey = "AIzaSyBsNmoGT2JAKXDIkVaaLhOQHlbTXLU8-Mo"; // API key is handled by the environment
+            const model = "gemini-2.0-flash";
+            const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${apiKey}`;
+            
+            const payload = image 
+                ? { contents: [{ parts: [{ text: prompt }, { inlineData: { mimeType: "image/jpeg", data: image } }] }] } 
+                : { contents: [{ parts: [{ text: prompt }] }] };
+
+            try {
+                 const fetchOptions = {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                };
+                const response = await fetchWithBackoff(apiUrl, fetchOptions);
+
+                if (!response.ok) {
+                    const errorBody = await response.text();
+                    console.error('API Error Response:', errorBody);
+                    throw new Error(`API request failed with status ${response.status}`);
+                }
+                const result = await response.json();
+                
+                if (result.candidates && result.candidates.length > 0 && result.candidates[0].content && result.candidates[0].content.parts && result.candidates[0].content.parts.length > 0) {
+                    return result.candidates[0].content.parts[0].text;
+                } else {
+                    console.error("Unexpected API response structure:", result);
+                    if (result.promptFeedback && result.promptFeedback.blockReason) {
+                        return `Prompt diblokir karena: ${result.promptFeedback.blockReason}. Coba ganti prompt Anda.`;
+                    }
+                    return "Gagal mendapatkan respons dari AI. Coba lagi.";
+                }
+            } catch (error) {
+                console.error('Error calling Gemini API:', error);
+                return "Waduh, ada error nih. Cek koneksi atau coba refresh.";
+            }
+        }
+
+        // --- UI Update and Logic ---
+        function updateAllPrompts() {
+            updateFinalPrompt();
+        }
+
+        function updateFinalPrompt() {
+            const { videoTitle, directorName, imageDescription1, imageDescription2, imageDescription3, imageDescription4, isGroup2Active, isGroup3Active, isGroup4Active, modelActivity, sharedProperty, productDescription, location, mood, windEffect, lighting, cameraTechnique, timeOfDay, temperature, music, audioMix, moodDescription, openingLine, explanation, cta, interactionLine, videoType } = state;
+            
+            let modelSection = `- Model Group 1: ${imageDescription1 || '(Group 1 not described)'}`;
+            if (isGroup2Active) modelSection += `\n- Model Group 2: ${imageDescription2 || '(Group 2 not described)'}`;
+            if (isGroup3Active) modelSection += `\n- Model Group 3: ${imageDescription3 || '(Group 3 not described)'}`;
+            if (isGroup4Active) modelSection += `\n- Model Group 4: ${imageDescription4 || '(Group 4 not described)'}`;
+
+            const negativePrompt = `robotic voice, cartoon style, animation, low quality, blurry image, visual distortion`;
+            const date = new Date().toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' });
+            const locationForWatermark = state.placeName || state.region || 'Indonesia';
+            const watermarkText = `Shoot by Iwan Setiawan, ${locationForWatermark}, ${date}`;
+
+            const basePrompt = `
+**Project Title: ${videoTitle || 'Untitled Project'}**
+**Director: ${directorName || 'Not specified'}**
+
+**Global Settings (Consistent Across All Clips):**
+${modelSection}
+- Product/Service: ${productDescription || '(Product/Service not described)'}
+- Shared Property: ${sharedProperty || 'None'}
+- Video Type: ${videoType || 'Not specified.'}
+- Location: ${location || 'Location not selected.'}
+- Mood: ${mood || 'Mood not selected.'}
+- Detailed Mood Description: ${moodDescription || 'Not generated yet.'}
+- Camera Technique: ${cameraTechnique || 'Not specified.'}
+- Wind Effect: ${windEffect || 'Not specified.'}
+- Lighting: ${lighting || 'Not specified.'}
+- Time of Day: ${timeOfDay || 'Not specified.'}
+- Temperature: ${temperature || 'Not specified.'}
+- Background Audio: ${music ? music : 'Not selected.'}
+- Audio Mix: ${audioMix || 'Not specified.'}
+- Visual Style: High-definition, modern color grading, dynamic transitions. Shot on a high-end smartphone (like iPhone 16 Pro Max) for ultra-realistic, crisp detail, suitable for social media publication.
+- Overlay Text: A subtle, semi-transparent watermark in the bottom-right corner with the text: "${watermarkText}" should be present throughout the clip.
+- Negative Prompt: ${negativePrompt}
+
+---
+`;
+            let action1, action2, action3, action4;
+            const userActivity = modelActivity ? `\n- User-defined Action: ${modelActivity}` : '';
+            const activeGroups = 1 + (isGroup2Active ? 1:0) + (isGroup3Active ? 1:0) + (isGroup4Active ? 1:0);
+
+            if (activeGroups >= 3) {
+                action1 = 'All model groups enter the scene and interact with each other.';
+                action2 = 'The groups focus on the product, highlighting different features.';
+                action3 = 'All models look at the camera for the call to action.';
+                action4 = 'A primary model (from Group 1) gives a final instruction or statement.';
+            } else if (activeGroups === 2) {
+                action1 = 'Group 1 enters the scene. Group 2 follows, introducing the product.';
+                action2 = 'Interaction between Group 1 and Group 2, focusing on product details. Show a close-up shot of the product.';
+                action3 = 'All models look at the camera simultaneously. Display product/price information.';
+                action4 = 'Model 1 gives a command to Model 2, who then begins to perform the action enthusiastically.';
+            } else {
+                action1 = 'Model enters the scene holding the product.';
+                action2 = 'Focus on the product details being shown by the model. Show a close-up shot.';
+                action3 = 'Model looks at the camera. Display product/price information.';
+                action4 = '(This action requires two or more model groups).';
+            }
+
+            elements.finalPrompt1.value = ("Create a video of: " + basePrompt + `
+**Clip Focus (0-8s): OPENING**
+- Action (Standard Direction): ${action1}${userActivity}
+- Dialogue/Text (Indonesian): "${openingLine || '(Opening dialogue not generated yet.)'}"
+`).trim();
+
+            elements.finalPrompt2.value = ("Create a video of: " + basePrompt + `
+**Clip Focus (8-16s): EXPLANATION**
+- Action (Standard Direction): ${action2}${userActivity}
+- Dialogue/Text (Indonesian): "${explanation || '(Explanation dialogue not generated yet.)'}"
+`).trim();
+
+            elements.finalPrompt3.value = ("Create a video of: " + basePrompt + `
+**Clip Focus (16-24s): CALL TO ACTION**
+- Action (Standard Direction): ${action3}${userActivity}
+- Dialogue/Text (Indonesian): "${cta || '(CTA dialogue not generated yet.)'}"
+`).trim();
+
+            elements.finalPrompt4.value = ("Create a video of: " + basePrompt + `
+**Clip Focus (24-32s): INTERACTION**
+- Action (Standard Direction): ${action4}${userActivity}
+- Dialogue/Text (Indonesian): "${interactionLine || '(Interaction dialogue not generated yet.)'}"
+`).trim();
+        }
+        
+        function handleOptionSelection(container, stateKey, nextElement) {
+            if (!container) return; // Guard against null container
+            container.addEventListener('click', (e) => {
+                const button = e.target.closest('button.option-button');
+                if (button) {
+                    if (button.classList.contains('selected')) {
+                        button.classList.remove('selected');
+                        state[stateKey] = '';
+                    } else {
+                        container.querySelectorAll('button').forEach(btn => btn.classList.remove('selected'));
+                        button.classList.add('selected');
+                        state[stateKey] = button.dataset.value;
+                    }
+                    
+                    updateAllPrompts();
+                    if(nextElement) {
+                        nextElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                    }
+                }
+            });
+        }
+
+        function checkCollageButtonState() {
+            const model1 = !!state.base64Image1;
+            const others = !!state.base64ProductImage || !!state.base64LocationImage;
+            elements.generateFinalPhotoButton.disabled = !(model1 && others);
+        }
+
+        function setupModelGroup(groupNum) {
+            const elementsMap = {
+                decreaseBtn: elements[`decreaseModelBtn${groupNum}`],
+                increaseBtn: elements[`increaseModelBtn${groupNum}`],
+                countDisplay: elements[`modelCount${groupNum}`],
+                uploadInput: elements[`imageUpload${groupNum}`],
+                previewImg: elements[`imagePreview${groupNum}`],
+                uploadText: elements[`uploadText${groupNum}`],
+                characterNameInput: elements[`characterNameInput${groupNum}`],
+                characterRoleInput: elements[`characterRoleInput${groupNum}`],
+                nationalityInput: elements[`nationalityInput${groupNum}`],
+                ethnicityInput: elements[`ethnicityInput${groupNum}`],
+                ageInput: elements[`ageInput${groupNum}`],
+                weightInput: elements[`weightInput${groupNum}`],
+                outfitIdInput: elements[`outfitIdInput${groupNum}`],
+                outfitColorInput: elements[`outfitColorInput${groupNum}`],
+                outfitInput: elements[`outfitInput${groupNum}`],
+                outfitImageUpload: elements[`outfitImageUpload${groupNum}`],
+                generateOutfitDescBtn: elements[`generateOutfitDescBtn${groupNum}`],
+                outfitBtnText: elements[`outfitBtnText${groupNum}`],
+                outfitLoader: elements[`outfitLoader${groupNum}`],
+                specialAttributesInput: elements[`specialAttributesInput${groupNum}`],
+                propertyInput: elements[`propertyInput${groupNum}`],
+                generateBtn: elements[`generateDescBtn${groupNum}`],
+                btnText: elements[`descBtnText${groupNum}`],
+                loader: elements[`descLoader${groupNum}`],
+                descTextarea: elements[`imageDescription${groupNum}`],
+            };
+            const stateKeys = {
+                count: `modelCount${groupNum}`,
+                base64: `base64Image${groupNum}`,
+                base64Outfit: `base64OutfitImage${groupNum}`,
+                desc: `imageDescription${groupNum}`,
+                outfit: `outfit${groupNum}`,
+                characterName: `characterName${groupNum}`,
+                characterRole: `characterRole${groupNum}`,
+                nationality: `nationality${groupNum}`,
+                ethnicity: `ethnicity${groupNum}`,
+                age: `age${groupNum}`,
+                weight: `weight${groupNum}`,
+                outfitId: `outfitId${groupNum}`,
+                outfitColor: `outfitColor${groupNum}`,
+                skinColor: `skinColor${groupNum}`,
+                faceShape: `faceShape${groupNum}`,
+                eyesShape: `eyesShape${groupNum}`,
+                noseShape: `noseShape${groupNum}`,
+                hairStyle: `hairStyle${groupNum}`,
+                specialAttributes: `specialAttributes${groupNum}`,
+                property: `property${groupNum}`,
+            };
+
+            elementsMap.increaseBtn.addEventListener('click', () => {
+                state[stateKeys.count]++;
+                elementsMap.countDisplay.textContent = state[stateKeys.count];
+                elementsMap.decreaseBtn.disabled = false;
+                updateAllPrompts();
+            });
+
+            elementsMap.decreaseBtn.addEventListener('click', () => {
+                if (state[stateKeys.count] > 1) {
+                    state[stateKeys.count]--;
+                    elementsMap.countDisplay.textContent = state[stateKeys.count];
+                    if (state[stateKeys.count] === 1) {
+                        elementsMap.decreaseBtn.disabled = true;
+                    }
+                    updateAllPrompts();
+                }
+            });
+            
+            elementsMap.uploadInput.addEventListener('change', (event) => {
+                const file = event.target.files[0];
+                if (file) {
+                    const reader = new FileReader();
+                    reader.onload = (e) => {
+                        elementsMap.previewImg.src = e.target.result;
+                        elementsMap.previewImg.classList.remove('hidden');
+                        elementsMap.uploadText.textContent = file.name;
+                        state[stateKeys.base64] = e.target.result.split(',')[1];
+                        elementsMap.generateBtn.disabled = false;
+                        checkCollageButtonState();
+                    };
+                    reader.readAsDataURL(file);
+                }
+            });
+
+            elementsMap.outfitImageUpload.addEventListener('change', (event) => {
+                const file = event.target.files[0];
+                if (file) {
+                    const reader = new FileReader();
+                    reader.onload = (e) => {
+                        state[stateKeys.base64Outfit] = e.target.result.split(',')[1];
+                        elementsMap.generateOutfitDescBtn.classList.remove('hidden');
+                    };
+                    reader.readAsDataURL(file);
+                }
+            });
+
+            elementsMap.generateOutfitDescBtn.addEventListener('click', async () => {
+                if (!state[stateKeys.base64Outfit]) return;
+                elementsMap.outfitLoader.classList.remove('hidden');
+                elementsMap.outfitBtnText.textContent = 'Mendeskripsikan...';
+                elementsMap.generateOutfitDescBtn.disabled = true;
+
+                const prompt = "Describe the clothing in this image in detail, including its type, color, material, and style. Be very specific.";
+                const outfitDescription = await callGemini(prompt, state[stateKeys.base64Outfit]);
+                
+                elementsMap.outfitInput.value = outfitDescription;
+                state[stateKeys.outfit] = outfitDescription;
+
+                elementsMap.outfitLoader.classList.add('hidden');
+                elementsMap.outfitBtnText.textContent = 'Deskripsikan Outfit dari Gambar';
+                elementsMap.generateOutfitDescBtn.disabled = false;
+            });
+
+            elementsMap.characterNameInput.addEventListener('input', (e) => { state[stateKeys.characterName] = e.target.value; });
+            elementsMap.characterRoleInput.addEventListener('input', (e) => { state[stateKeys.characterRole] = e.target.value; });
+            elementsMap.nationalityInput.addEventListener('input', (e) => { state[stateKeys.nationality] = e.target.value; });
+            elementsMap.ethnicityInput.addEventListener('input', (e) => { state[stateKeys.ethnicity] = e.target.value; });
+            elementsMap.ageInput.addEventListener('input', (e) => { state[stateKeys.age] = e.target.value; });
+            elementsMap.weightInput.addEventListener('input', (e) => { state[stateKeys.weight] = e.target.value; });
+            elementsMap.outfitIdInput.addEventListener('input', (e) => { state[stateKeys.outfitId] = e.target.value; });
+            elementsMap.outfitColorInput.addEventListener('input', (e) => { state[stateKeys.outfitColor] = e.target.value; });
+            elementsMap.outfitInput.addEventListener('input', (e) => { state[stateKeys.outfit] = e.target.value; });
+            elementsMap.specialAttributesInput.addEventListener('input', (e) => { state[stateKeys.specialAttributes] = e.target.value; });
+            elementsMap.propertyInput.addEventListener('input', (e) => { state[stateKeys.property] = e.target.value; });
+
+
+            elementsMap.generateBtn.addEventListener('click', async () => {
+                if (!state[stateKeys.base64]) return;
+                elementsMap.loader.classList.remove('hidden');
+                elementsMap.btnText.textContent = 'Lagi Mikir...';
+                elementsMap.generateBtn.disabled = true;
+
+                let optionalDetails = '';
+                if (state[stateKeys.characterName]) optionalDetails += `Their name is ${state[stateKeys.characterName]}. `;
+                if (state[stateKeys.characterRole]) optionalDetails += `Their role is as a ${state[stateKeys.characterRole]}. `;
+                if (state[stateKeys.nationality]) optionalDetails += `Their nationality is ${state[stateKeys.nationality]}. `;
+                if (state[stateKeys.ethnicity]) optionalDetails += `Their ethnicity is ${state[stateKeys.ethnicity]}. `;
+                if (state[stateKeys.age]) optionalDetails += `Their age is ${state[stateKeys.age]}. `;
+                if (state[stateKeys.weight]) optionalDetails += `Their weight is approximately ${state[stateKeys.weight]}kg. `;
+                if (state[stateKeys.outfitId] && state[stateKeys.outfitColor]) {
+                    optionalDetails += `They are associated with outfit ID '${state[stateKeys.outfitId]}' which is color '${state[stateKeys.outfitColor]}'. `;
+                }
+                if (state[stateKeys.specialAttributes]) {
+                    optionalDetails += `They are also wearing: ${state[stateKeys.specialAttributes]}. `;
+                }
+                if (state[stateKeys.property]) {
+                    optionalDetails += `They are using a ${state[stateKeys.property]}. `;
+                }
+
+                // Build the specific facial feature string
+                let specificDetails = '';
+                if (state[stateKeys.skinColor]) specificDetails += `Their skin color is ${state[stateKeys.skinColor]}. `;
+                if (state[stateKeys.faceShape]) specificDetails += `Their face shape is ${state[stateKeys.faceShape]}. `;
+                if (state[stateKeys.eyesShape]) specificDetails += `They have ${state[stateKeys.eyesShape]}. `;
+                if (state[stateKeys.noseShape]) specificDetails += `They have a ${state[stateKeys.noseShape]}. `;
+                if (state[stateKeys.hairStyle]) specificDetails += `They have ${state[stateKeys.hairStyle]}. `;
+
+                const outfitDesc = state[stateKeys.outfit].trim();
+                let prompt;
+
+                // Construct the prompt with conditional logic for facial features
+                let basePrompt = `Describe the physical appearance of the ${state[stateKeys.count] > 1 ? state[stateKeys.count] + ' people' : 'person'} in this image in detail using standard English. ${optionalDetails}`;
+                
+                if (specificDetails) {
+                    basePrompt += ` For their features, you MUST use the following descriptions: ${specificDetails}. Describe any other facial features (like lips, eyebrows) and gender based on the image.`;
+                } else {
+                    basePrompt += ` Focus on their static features: gender, skin tone, facial features (face shape, eyes, nose), and hair style/color.`;
+                }
+
+                basePrompt += ` Assume their face is professionally made up, ready for a video or film shoot, and describe the makeup style if visible (e.g., natural, glamorous, bold). Do NOT describe their pose or what they are doing.`;
+                
+                if (outfitDesc) {
+                    prompt = basePrompt + ` IMPORTANT: For their clothing, you MUST describe them as wearing the following outfit: "${outfitDesc}".`;
+                } else {
+                    prompt = basePrompt + ` Also describe the clothing they are wearing in detail.`;
+                }
+                
+                state[stateKeys.desc] = await callGemini(prompt, state[stateKeys.base64]);
+                elementsMap.descTextarea.value = state[stateKeys.desc];
+                elementsMap.descTextarea.classList.add('generated-content');
+                elementsMap.loader.classList.add('hidden');
+                elementsMap.btnText.textContent = 'Jadiin Deskripsi!';
+                elementsMap.generateBtn.disabled = false;
+                updateAllPrompts();
+                if (groupNum === 1 && !state.isGroup2Active) {
+                    elements.card2.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                }
+            });
+        }
+
+        function generateScenario(type, loader, btnText, outputElem, stateKey) {
+            const clickHandler = async () => {
+                const { productDescription, videoType, modelCount1, imageDescription1, characterName1, isGroup2Active, modelCount2, imageDescription2, characterName2, videoGoal } = state;
+                const product = productDescription || elements.productInput.value;
+                if (!product) { outputElem.value = "Isi dulu produknya, bro!"; return; }
+                
+                loader.classList.remove('hidden');
+                btnText.textContent = 'Lagi Ngide...';
+                outputElem.disabled = true;
+
+                let prompt;
+                const videoGoalInstruction = videoGoal ? `\n- Rujukan Tujuan: "${videoGoal}"` : '';
+                const videoTypeInstruction = videoType ? `\n- Jenis Video: "${videoType}"` : '';
+                const baseInstruction = {
+                    "PEMBUKA": `Buat sebuah kalimat pembuka (problem statement) yang kuat dan menarik perhatian. ${characterName1 ? `Jika memungkinkan, perkenalkan diri sebagai "${characterName1}".` : ''} Fokus pada masalah yang bisa diselesaikan oleh produk.`,
+                    "PENJELASAN": "Jelaskan bagaimana produk ini menjadi solusi atas masalah yang disebutkan di pembuka. Fokus pada manfaat utama.",
+                    "CTA": `Buat sebuah call-to-action yang jelas dan mendesak. ${characterName1 ? `Ajak audiens untuk memesan produk dengan menghubungi "${characterName1}".` : 'Ajak untuk langsung beli atau klik link.'}`
+                };
+
+                if (isGroup2Active && imageDescription2) {
+                    const multiModelInstruction = {
+                        "PEMBUKA": `Buat dialog pembuka profesional di mana Grup 1 (dipimpin oleh ${characterName1 || 'Model 1'}) menyajikan sebuah masalah umum dan Grup 2 (dipimpin oleh ${characterName2 || 'Model 2'}) merespon.`,
+                        "PENJELASAN": "Buat dialog profesional di mana kedua grup model mendiskusikan bagaimana produk ini adalah solusi terbaik untuk masalah tersebut.",
+                        "CTA": `Buat dialog call-to-action profesional di mana kedua grup bersama-sama mengajak audiens untuk memesan produk, sebutkan ${characterName1 || 'kami'} sebagai narahubung.`
+                    };
+                    prompt = `Sebagai seorang ahli marketing, buat dialog ${type} profesional untuk iklan video antara dua grup model.
+                    - Grup Model 1 (${modelCount1} orang): "${imageDescription1}"
+                    - Grup Model 2 (${modelCount2} orang): "${imageDescription2}"
+                    - Produk: "${product}"
+                    ${videoGoalInstruction}
+                    ${videoTypeInstruction}
+                    - Instruksi: ${multiModelInstruction[type]} Gunakan bahasa Indonesia yang persuasif dan profesional. PENTING: Hasilnya harus terdiri dari maksimal 2 kalimat singkat saja, tanpa label grup.`;
+                } else {
+                    prompt = `Sebagai seorang ahli marketing, buat dialog ${type} profesional untuk iklan video.
+                    - Produk: "${product}"
+                    - Jumlah Model: ${modelCount1}
+                    ${videoGoalInstruction}
+                    ${videoTypeInstruction}
+                    - Instruksi: ${baseInstruction[type]} ${modelCount1 > 1 ? "Buat dialog yang saling mendukung antar model dalam satu grup." : "Buat satu kalimat yang diucapkan oleh seorang narator atau model."} Gunakan bahasa Indonesia yang persuasif dan profesional. PENTING: Hasilnya harus terdiri dari maksimal 2 kalimat singkat saja.`;
+                }
+                
+                const response = await callGemini(prompt);
+                state[stateKey] = response;
+                outputElem.value = response;
+                outputElem.classList.add('generated-content');
+                loader.classList.add('hidden');
+                btnText.textContent = `Buat ${type.charAt(0) + type.slice(1).toLowerCase()} Keren!`;
+                outputElem.disabled = false;
+                updateAllPrompts();
+                
+                const nextCard = type === 'PEMBUKA' ? elements.card5 : (type === 'PENJELASAN' ? elements.card6 : elements.titleLangkah4);
+                nextCard.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            };
+            
+            return clickHandler;
+        }
+
+        function copyToClipboard(element, button) {
+             element.select();
+             document.execCommand('copy');
+             elements.copySuccessMessage.textContent = `Prompt dari ${button.textContent.replace('Salin ', '')} berhasil disalin!`;
+             elements.copySuccessMessage.classList.remove('opacity-0');
+             setTimeout(() => {
+                 elements.copySuccessMessage.classList.add('opacity-0');
+             }, 2500);
+        }
+
+        function resetAll(logout = false) {
+            elements.formContainer.classList.add('opacity-0');
+            setTimeout(() => {
+                state = { ...initialState };
+                const textFields = [elements.videoTitleInput, elements.directorNameInput, elements.imageDescription1, elements.imageDescription2, elements.imageDescription3, elements.imageDescription4, elements.productInput, elements.productDescription, elements.openingLine, elements.explanation, elements.cta, elements.interactionLine, elements.outfitInput1, elements.outfitInput2, elements.outfitInput3, elements.outfitInput4, elements.characterNameInput1, elements.characterRoleInput1, elements.nationalityInput1, elements.ethnicityInput1, elements.ageInput1, elements.weightInput1, elements.characterNameInput2, elements.characterRoleInput2, elements.nationalityInput2, elements.ethnicityInput2, elements.ageInput2, elements.weightInput2, elements.characterNameInput3, elements.characterRoleInput3, elements.nationalityInput3, elements.ethnicityInput3, elements.ageInput3, elements.weightInput3, elements.characterNameInput4, elements.characterRoleInput4, elements.nationalityInput4, elements.ethnicityInput4, elements.ageInput4, elements.weightInput4, elements.brandNameInput, elements.regionInput, elements.placeNameInput, elements.locationDescriptionTextarea, elements.outfitIdInput1, elements.outfitColorInput1, elements.outfitIdInput2, elements.outfitColorInput2, elements.outfitIdInput3, elements.outfitColorInput3, elements.outfitIdInput4, elements.outfitColorInput4, elements.specialAttributesInput1, elements.specialAttributesInput2, elements.specialAttributesInput3, elements.specialAttributesInput4, elements.propertyInput1, elements.propertyInput2, elements.propertyInput3, elements.propertyInput4, elements.videoGoalInput, elements.modelActivityInput, elements.sharedPropertyInput, elements.moodDescription, elements.photoPrompt, elements.styleScenarioInput];
+                textFields.forEach(field => { if(field) field.value = ''; });
+                
+                for (let i = 1; i <= 4; i++) {
+                    elements[`modelCount${i}`].textContent = '1';
+                    elements[`decreaseModelBtn${i}`].disabled = true;
+                    elements[`imageUpload${i}`].value = null;
+                    elements[`imagePreview${i}`].src = '';
+                    elements[`imagePreview${i}`].classList.add('hidden');
+                    elements[`uploadText${i}`].textContent = `Klik buat upload foto grup ${i}`;
+                    elements[`generateDescBtn${i}`].disabled = true;
+                }
+
+                elements.modelGroup2.classList.add('hidden');
+                elements.modelGroup3.classList.add('hidden');
+                elements.modelGroup4.classList.add('hidden');
+                elements.addGroupBtn.classList.remove('hidden');
+                
+                elements.generateProductDescBtn.disabled = true;
+                elements.productImageUpload.value = null;
+                elements.productImagePreview.src = '';
+                elements.productImagePreview.classList.add('hidden');
+                elements.productUploadText.textContent = 'Upload Gambar Produk';
+
+                document.querySelectorAll('.option-button.selected').forEach(btn => btn.classList.remove('selected'));
+                elements.musicSuggestions.textContent = '';
+
+                elements.locationImageUpload.value = null;
+                elements.locationImagePreview.src = '';
+                elements.locationImagePreview.classList.add('hidden');
+                elements.generateLocationBtn.classList.add('hidden');
+                elements.locationUploadText.textContent = 'Atau Upload Gambar Lokasi';
+
+                elements.photoResult.innerHTML = '';
+                elements.photoResult.classList.add('hidden');
+                elements.confirmationSection.classList.remove('hidden');
+                elements.step4Container.classList.add('hidden');
+                
+                elements.videoPreviewContainer.classList.add('hidden');
+                elements.generateVideoBtn.classList.remove('hidden');
+                elements.videoResultContainer.classList.add('hidden');
+                elements.videoLoaderContainer.classList.remove('hidden');
+
+                lockPrompts();
+                updateAllPrompts();
+                checkCollageButtonState();
+                
+                if (!logout) {
+                    elements.formContainer.classList.remove('opacity-0');
+                    window.scrollTo({ top: 0, behavior: 'smooth' });
+                }
+            }, 500);
+        }
+
+        // --- Event Listeners ---
+        elements.resetBtn.addEventListener('click', () => resetAll(false));
+        
+        elements.exitBtn.addEventListener('click', (e) => {
+            e.preventDefault();
+            resetAll(true);
+            elements.formContainer.classList.add('hidden');
+            elements.accessIdCard.classList.remove('hidden');
+            elements.accessIdInput.value = '';
+        });
+        
+        elements.revealPromptBtn.addEventListener('click', () => {
+            elements.step4Container.classList.remove('hidden');
+            elements.confirmationSection.classList.add('hidden');
+            elements.titleLangkah4.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            lockPrompts();
+        });
+
+        elements.confirmNoBtn.addEventListener('click', () => {
+            elements.titleLangkah3.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        });
+        
+        elements.addGroupBtn.addEventListener('click', () => {
+            if (!state.isGroup2Active) {
+                state.isGroup2Active = true;
+                elements.modelGroup2.classList.remove('hidden');
+            } else if (!state.isGroup3Active) {
+                state.isGroup3Active = true;
+                elements.modelGroup3.classList.remove('hidden');
+            } else if (!state.isGroup4Active) {
+                state.isGroup4Active = true;
+                elements.modelGroup4.classList.remove('hidden');
+                elements.addGroupBtn.classList.add('hidden');
+            }
+            updateAllPrompts();
+            checkCollageButtonState();
+        });
+
+        function setupRemoveButton(groupNum) {
+            const removeBtn = elements[`removeGroup${groupNum}Btn`];
+            removeBtn.addEventListener('click', () => {
+                state[`isGroup${groupNum}Active`] = false;
+                elements[`modelGroup${groupNum}`].classList.add('hidden');
+                // Reset state for this group
+                state[`modelCount${groupNum}`] = 1;
+                state[`imageDescription${groupNum}`] = '';
+                state[`base64Image${groupNum}`] = null;
+                // ... reset other fields ...
+                elements.addGroupBtn.classList.remove('hidden');
+                updateAllPrompts();
+                checkCollageButtonState();
+            });
+        }
+        setupRemoveButton(2);
+        setupRemoveButton(3);
+        setupRemoveButton(4);
+
+
+        function updateProductButtonState() {
+            const hasText = elements.productInput.value.trim() !== '';
+            const hasImage = !!state.base64ProductImage;
+            const hasService = elements.serviceDescriptionInput.value.trim() !== '';
+            elements.generateProductDescBtn.disabled = !hasText && !hasImage && !hasService;
+        }
+
+        elements.productInput.addEventListener('input', updateProductButtonState);
+        elements.brandNameInput.addEventListener('input', (e) => { state.brandName = e.target.value; });
+        elements.serviceDescriptionInput.addEventListener('input', (e) => {
+            state.serviceDescription = e.target.value;
+            updateProductButtonState();
+        });
+        
+        elements.productImageUpload.addEventListener('change', (event) => {
+            const file = event.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    elements.productImagePreview.src = e.target.result;
+                    elements.productImagePreview.classList.remove('hidden');
+                    elements.productUploadText.textContent = file.name;
+                    state.base64ProductImage = e.target.result.split(',')[1];
+                    updateProductButtonState();
+                    checkCollageButtonState();
+                };
+                reader.readAsDataURL(file);
+            }
+        });
+
+        elements.generateProductDescBtn.addEventListener('click', async () => {
+            elements.productLoader.classList.remove('hidden');
+            elements.productBtnText.textContent = 'Lagi Mikir...';
+            elements.generateProductDescBtn.disabled = true;
+
+            let prompt;
+            let image = null;
+            const brandInfo = state.brandName ? `from the brand '${state.brandName}'` : '';
+            const productInput = elements.productInput.value.trim();
+            const serviceInput = state.serviceDescription.trim();
+
+            if (state.base64ProductImage) {
+                prompt = `Based on the image, create a highly detailed product description ${brandInfo} in standard English. Describe its type, material, color, texture, unique features, and design elements.`;
+                if (serviceInput) {
+                    prompt += ` Also, incorporate the following service/profession into the description, explaining how the product is relevant to it: "${serviceInput}".`;
+                }
+                image = state.base64ProductImage;
+            } else {
+                let combinedInput = [];
+                if (productInput) combinedInput.push(`a product named "${productInput}" ${brandInfo}`);
+                if (serviceInput) combinedInput.push(`a service or profession described as "${serviceInput}"`);
+                
+                prompt = `Create a highly detailed promotional description for ${combinedInput.join(' and ')} in standard English. Elaborate on its potential features, benefits, target audience, and ideal use cases. Be as descriptive and appealing as possible.`;
+            }
+
+            state.productDescription = await callGemini(prompt, image);
+            elements.productDescription.value = state.productDescription;
+            elements.productDescription.classList.add('generated-content');
+            elements.productLoader.classList.add('hidden');
+            elements.productBtnText.textContent = 'Jadikan Deskripsi Gabungan!';
+            elements.generateProductDescBtn.disabled = false;
+            updateAllPrompts();
+            elements.card3.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        });
+        
+        elements.generateMusicBtn.addEventListener('click', async () => {
+            const context = `${state.productDescription}. Suasananya ${state.mood || 'netral'}.`;
+            if (!state.productDescription && !elements.productInput.value) {
+                elements.musicSuggestions.textContent = "Isi produknya dulu ya.";
+                return;
+            }
+            elements.musicLoader.classList.remove('hidden');
+            elements.musicBtnText.textContent = 'Nyari Vibe...';
+            elements.generateMusicBtn.disabled = true;
+            const locationInfo = state.location ? `The location is ${state.location}.` : 'The location is not specified.';
+            const productInfo = state.productDescription || elements.productInput.value;
+            const prompt = `Act as an audio director. For a video ad with the product "${productInfo}" and a "${state.mood || 'neutral'}" mood, suggest appropriate background audio. ${locationInfo} Your suggestion should be EITHER: 1. A list of 3 suitable music genres, OR 2. A description of ambient environmental sounds fitting the location. Prioritize ambient sounds if the location is specific (e.g., cafe, street). Be concise. Examples: 'Lo-fi Hip Hop, Indie Pop, Future Bass' OR 'The gentle hum of an espresso machine, distant chatter, soft clinking of cups.'`;
+            state.music = await callGemini(prompt);
+            elements.musicSuggestions.textContent = state.music;
+            elements.musicSuggestions.classList.add('generated-content');
+            elements.musicLoader.classList.add('hidden');
+            elements.musicBtnText.textContent = 'Rekomendasikan Audio Latar';
+            elements.generateMusicBtn.disabled = false;
+            updateAllPrompts();
+        });
+
+        elements.generateMoodDescBtn.addEventListener('click', async () => {
+            const { mood, lighting, timeOfDay, temperature, music, windEffect, audioMix, cameraTechnique } = state;
+            if (!mood && !lighting && !timeOfDay && !temperature && !music && !windEffect && !audioMix && !cameraTechnique) {
+                elements.moodDescription.value = "Pilih dulu beberapa opsi suasana di atas.";
+                return;
+            }
+            elements.moodDescLoader.classList.remove('hidden');
+            elements.moodDescBtnText.textContent = 'Merasakan Vibe...';
+            elements.generateMoodDescBtn.disabled = true;
+
+            const prompt = `Based on the following keywords, write a short, evocative description of the overall atmosphere for a video scene in English. This description will be used as a reference for photo and video promotion prompts.
+            - Mood: ${mood || 'not specified'}
+            - Lighting: ${lighting || 'not specified'}
+            - Time of Day: ${timeOfDay || 'not specified'}
+            - Temperature: ${temperature || 'not specified'}
+            - Wind Effect: ${windEffect || 'not specified'}
+            - Camera Technique: ${cameraTechnique || 'not specified'}
+            - Background Audio: ${music || 'not specified'}
+            - Audio Mix: ${audioMix || 'not specified'}
+            
+            Combine these elements into a cohesive one or two-sentence description. For example, if the keywords are "relaxed", "natural outdoor lighting", "golden hour sunset", "warm", and "Lo-fi Hip Hop", a good description would be: "The scene is bathed in the warm, soft glow of the golden hour, creating a relaxed and intimate atmosphere, complemented by a chill lo-fi hip hop soundtrack."`;
+            
+            state.moodDescription = await callGemini(prompt);
+            elements.moodDescription.value = state.moodDescription;
+            elements.moodDescription.classList.add('generated-content');
+            elements.moodDescLoader.classList.add('hidden');
+            elements.moodDescBtnText.textContent = 'Jadikan Deskripsi Suasana';
+            elements.generateMoodDescBtn.disabled = false;
+            updateAllPrompts();
+            elements.titleLangkah2.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        });
+
+        elements.generatePhotoPromptBtn.addEventListener('click', async () => {
+            const { imageDescription1, productDescription, location, moodDescription, modelActivity, photoType, styleScenario, photoRatio } = state;
+            if (!imageDescription1 || !productDescription || !location || !moodDescription || !photoType || !photoRatio) {
+                elements.photoPrompt.value = "Harap lengkapi deskripsi model, produk, lokasi, suasana, jenis foto, dan rasio foto terlebih dahulu.";
+                return;
+            }
+            elements.photoPromptLoader.classList.remove('hidden');
+            elements.photoPromptBtnText.textContent = 'Merancang Foto...';
+            elements.generatePhotoPromptBtn.disabled = true;
+
+            const photoTypeDescriptions = {
+                "Product Shot": "Focus on the product itself, with lighting and background that highlight product details. Can be a studio shot on a plain background or a detail shot highlighting special features.",
+                "Lifestyle Photography": "Show the product being used in a real-life context. The goal is to build an emotional connection and showcase the target audience's lifestyle.",
+                "Hero Image": "A primary, striking image, often used for main ads or campaign landing pages. It should have a strong, visually appealing composition, and often be dramatic or dynamic.",
+                "Flat Lay": "A top-down photo showing the product and other items arranged aesthetically. Popular for social media or digital catalogs.",
+                "Behind-the-Scenes (BTS)": "Show the process of making the product or the photoshoot itself. This builds trust and connection with the audience.",
+                "Conceptual/Artistic Photography": "More artistic and symbolic, illustrating the brand's values or philosophy. Often used for major branding campaigns.",
+                "Testimonial/Endorsement Photography": "Feature real customers or celebrities using the product to increase credibility and appeal.",
+                "Packshot": "An image of the product with its packaging, often used for e-commerce, catalogs, or online stores."
+            };
+            
+            const date = new Date().toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' });
+            const locationForWatermark = state.placeName || state.region || 'Indonesia';
+            const watermarkText = `Shoot by Iwan Setiawan, ${locationForWatermark}, ${date}`;
+
+            const prompt = `Act as a professional photographer creating a prompt for an image generation AI. Combine the following elements into a single, detailed, and cohesive prompt for a promotional photoshoot.
+
+            - **Chosen Photo Type:** ${photoType}
+            - **Description of Photo Type:** ${photoTypeDescriptions[photoType]}
+            - **Photo Aspect Ratio:** ${photoRatio}
+            - **Primary Subject:** ${imageDescription1}
+            - **Product/Service:** ${productDescription}
+            - **Location:** ${location}
+            - **Activity/Interaction:** ${modelActivity || 'Model is interacting naturally with the product.'}
+            - **Style Scenario/Director's Notes:** ${styleScenario || 'No specific style notes provided.'}
+            - **Overall Atmosphere:** ${moodDescription}
+            - **Quality Requirement:** The final image must have the quality of a high-end smartphone (like iPhone 16 Pro Max), featuring ultra-realistic, crisp detail, and vibrant color grading suitable for social media publication.
+            - **Watermark/Overlay Text:** A subtle, semi-transparent watermark in the bottom-right corner with the text: "${watermarkText}".
+
+            Based on all this information, especially the **Chosen Photo Type**, **Photo Aspect Ratio**, and **Style Scenario**, create the final prompt. The prompt should be in English, focusing on creating a visually stunning still photograph. Emphasize composition, lighting, model poses, and the overall aesthetic specific to the chosen photo type. The final output must be a single paragraph.`;
+
+            const finalPhotoPrompt = await callGemini(prompt);
+            state.photoPrompt = "Create an image of: " + finalPhotoPrompt;
+            elements.photoPrompt.value = state.photoPrompt;
+            elements.photoPrompt.classList.add('generated-content');
+            elements.photoPromptLoader.classList.add('hidden');
+            elements.photoPromptBtnText.textContent = 'Buat Prompt Foto!';
+            elements.generatePhotoPromptBtn.disabled = false;
+            document.getElementById('photoGenerationSection').scrollIntoView({ behavior: 'smooth', block: 'center' });
+        });
+
+        elements.locationImageUpload.addEventListener('change', (event) => {
+            const file = event.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    elements.locationImagePreview.src = e.target.result;
+                    elements.locationImagePreview.classList.remove('hidden');
+                    elements.locationUploadText.textContent = file.name;
+                    state.base64LocationImage = e.target.result.split(',')[1];
+                    elements.generateLocationBtn.classList.remove('hidden');
+                    checkCollageButtonState();
+                };
+                reader.readAsDataURL(file);
+            }
+        });
+
+        elements.generateLocationBtn.addEventListener('click', async () => {
+            if (!state.base64LocationImage) return;
+            elements.locationLoader.classList.remove('hidden');
+            elements.locationBtnText.textContent = 'Generating...';
+            elements.generateLocationBtn.disabled = true;
+            
+            const regionInfo = state.region ? ` It is located in ${state.region}.` : '';
+            const placeNameInfo = state.placeName ? ` The specific place is ${state.placeName}.` : '';
+
+            const prompt = `Describe this location for a video shoot in English.${regionInfo}${placeNameInfo} Focus on the environment, lighting, and overall mood. Be concise.`;
+            const locationDesc = await callGemini(prompt, state.base64LocationImage);
+            state.location = locationDesc.trim();
+            elements.locationDescriptionTextarea.value = state.location;
+            
+            elements.locationLoader.classList.add('hidden');
+            elements.locationBtnText.textContent = 'Jadikan Deskripsi Lokasi';
+            elements.generateLocationBtn.disabled = false;
+            updateAllPrompts();
+        });
+        
+        elements.regionInput.addEventListener('input', (e) => { state.region = e.target.value; });
+        elements.placeNameInput.addEventListener('input', (e) => { state.placeName = e.target.value; });
+        elements.locationDescriptionTextarea.addEventListener('input', (e) => { 
+            state.location = e.target.value;
+            updateAllPrompts();
+        });
+
+        elements.videoGoalInput.addEventListener('input', (e) => {
+            state.videoGoal = e.target.value;
+        });
+
+        const generateImage = async () => {
+            if (!state.photoPrompt) {
+                const resultContainer = elements.photoResult;
+                resultContainer.innerHTML = `<p class="text-yellow-400">Silakan buat prompt foto terlebih dahulu di Langkah 2.</p>`;
+                resultContainer.classList.remove('hidden');
+                return;
+            }
+
+            const resultContainer = elements.photoResult;
+            resultContainer.innerHTML = `<div class="flex flex-col items-center justify-center">
+                <div class="loader" style="width: 50px; height: 50px; border-top-color: #FFD93D;"></div>
+                <p class="mt-4 text-lg text-gray-300">Menghasilkan foto... proses ini mungkin memakan waktu.</p>
+            </div>`;
+            resultContainer.classList.remove('hidden');
+
+            try {
+                const payload = {
+                    instances: [{ prompt: state.photoPrompt }],
+                    parameters: { "sampleCount": 1 }
+                };
+                const apiKey = ""; // Handled by environment
+                const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/imagen-3.0-generate-002:predict?key=${apiKey}`;
+                
+                const fetchOptions = {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                };
+                
+                const response = await fetchWithBackoff(apiUrl, fetchOptions);
+
+                if (!response.ok) {
+                    const errorBody = await response.json().catch(() => response.text()); // Try to parse JSON, fallback to text
+                    console.error('API Error Response Body:', errorBody);
+                    const errorMessage = errorBody.error?.message || JSON.stringify(errorBody);
+                    throw new Error(`API request failed with status ${response.status}: ${errorMessage}`);
+                }
+
+                const result = await response.json();
+                
+                if (result.predictions && result.predictions.length > 0 && result.predictions[0].bytesBase64Encoded) {
+                    const base64Data = result.predictions[0].bytesBase64Encoded;
+                    const imageUrl = `data:image/png;base64,${base64Data}`;
+                    
+                    resultContainer.innerHTML = `<img id="generatedPhotoImage" class="mx-auto rounded-lg max-w-full h-auto" />`;
+                    const img = document.getElementById('generatedPhotoImage');
+                    img.src = imageUrl;
+
+                } else {
+                    if (result.error) {
+                         console.error("API returned an error object:", result.error);
+                         throw new Error(`API Error: ${result.error.message}`);
+                    }
+                    console.error("Invalid response structure from image generation API:", result);
+                    throw new Error("Invalid response structure from image generation API.");
+                }
+
+            } catch (error) {
+                console.error('Error generating image:', error);
+                resultContainer.innerHTML = `<p class="text-red-400">Gagal menghasilkan gambar: ${error.message}. Silakan coba lagi.</p>`;
+            }
+        };
+
+        const generateVideo = () => {
+            elements.videoPreviewContainer.classList.remove('hidden');
+            elements.generateVideoBtn.classList.add('hidden');
+            elements.videoLoaderContainer.classList.remove('hidden');
+            elements.videoResultContainer.classList.add('hidden');
+
+            setTimeout(() => {
+                elements.videoLoaderContainer.classList.add('hidden');
+                elements.videoResultContainer.classList.remove('hidden');
+                const location = "Cilegon";
+                const date = new Date().toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' });
+                elements.videoResultContainer.innerHTML = `
+                    <div class="bg-gray-800/80 p-6 rounded-lg relative">
+                        <h4 class="text-xl font-bold mb-2 text-yellow-300">Langkah Selanjutnya</h4>
+                        <p class="text-lg">Untuk melanjutkan proses pembuatan video, silakan hubungi:</p>
+                        <p class="text-2xl font-bold my-4">IWAN SETIAWAN</p>
+                        <p class="text-xl">0815 1073 5932</p>
+                         <div class="absolute bottom-2 right-4 text-xs text-gray-400">
+                            <p>made by Iwan Setiawan</p>
+                            <p>${location}, ${date}</p>
+                        </div>
+                    </div>
+                `;
+            }, 2000);
+        };
+
+        elements.generateFinalPhotoButton.addEventListener('click', () => {
+            onDonationModalCloseCallback = () => {
+                onPasswordSuccessCallback = generateImage;
+                showPasswordModal("Untuk Menghasilkan Foto");
+            };
+            elements.donationModal.classList.remove('hidden');
+        });
+
+        elements.generateVideoBtn.addEventListener('click', () => {
+            onDonationModalCloseCallback = () => {
+                onPasswordSuccessCallback = generateVideo;
+                showPasswordModal("Untuk Generate Video");
+            };
+            elements.donationModal.classList.remove('hidden');
+        });
+
+        const scenarioOpeningHandler = generateScenario('PEMBUKA', elements.openingLoader, elements.openingBtnText, elements.openingLine, 'openingLine');
+        const scenarioExplanationHandler = generateScenario('PENJELASAN', elements.explanationLoader, elements.explanationBtnText, elements.explanation, 'explanation');
+        const scenarioCtaHandler = generateScenario('CTA', elements.ctaLoader, elements.ctaBtnText, elements.cta, 'cta');
+        
+        elements.generateOpeningBtn.addEventListener('click', scenarioOpeningHandler);
+        elements.generateExplanationBtn.addEventListener('click', scenarioExplanationHandler);
+        elements.generateCtaBtn.addEventListener('click', scenarioCtaHandler);
+
+        elements.generateInteractionBtn.addEventListener('click', async () => {
+            const { isGroup2Active, videoGoal, characterName1, characterName2 } = state;
+            if (!isGroup2Active) {
+                elements.interactionLine.value = "Fitur ini hanya untuk 2 grup model.";
+                return;
+            }
+            if (!videoGoal) {
+                elements.interactionLine.value = "Isi dulu 'Tujuan Video Anda' untuk menggunakan fitur ini.";
+                return;
+            }
+
+            elements.interactionLoader.classList.remove('hidden');
+            elements.interactionBtnText.textContent = 'Lagi Ngide...';
+            elements.generateInteractionBtn.disabled = true;
+
+            const prompt = `Buat dialog singkat (maksimal 2 kalimat) di mana ${characterName1 || 'Model 1'} memberi perintah kepada ${characterName2 || 'Model 2'}. Perintah ini harus secara langsung mendukung tujuan video berikut: "${videoGoal}". ${characterName2 || 'Model 2'} harus merespon dengan singkat dan antusias, menunjukkan kesiapan untuk melaksanakan perintah tersebut. Contoh: Model 1: "Ayo tunjukkan ke mereka betapa mudahnya ini." Model 2: "Siap, langsung kita buktikan!"`;
+            
+            const response = await callGemini(prompt);
+            state.interactionLine = response;
+            elements.interactionLine.classList.add('generated-content');
+            elements.interactionLoader.classList.add('hidden');
+            elements.interactionBtnText.textContent = 'Buat Interaksi Perintah!';
+            elements.generateInteractionBtn.disabled = false;
+            updateAllPrompts();
+        });
+
+
+        // --- Password Protection Logic ---
+        const protectedContentWrappers = [elements.promptContentWrapper2, elements.promptContentWrapper3, elements.promptContentWrapper4];
+        const protectedTextareas = [elements.finalPrompt2, elements.finalPrompt3, elements.finalPrompt4];
+        const copyButtons = [elements.copyPromptBtn1, elements.copyPromptBtn2, elements.copyPromptBtn3, elements.copyPromptBtn4];
+
+        function showPasswordModal(title = "Akses Terbatas", description = "Untuk melanjutkan, silakan masukkan kata sandi.") {
+            elements.passwordModalTitle.textContent = title;
+            elements.passwordModalDescription.textContent = description;
+            elements.passwordModal.classList.remove('hidden');
+            elements.passwordInput.focus();
+        }
+
+        function hidePasswordModal() {
+            elements.passwordModal.classList.add('hidden');
+            elements.passwordInput.value = '';
+            elements.passwordError.textContent = '';
+        }
+
+        function unlockPrompts() {
+            state.promptsLocked = false;
+            protectedContentWrappers.forEach(container => container.classList.remove('locked-prompt-content'));
+            protectedTextareas.forEach(ta => {
+                if(ta) {
+                    ta.readOnly = false;
+                    ta.classList.remove('locked');
+                }
+            });
+        }
+
+        function lockPrompts() {
+            state.promptsLocked = true;
+            protectedContentWrappers.forEach(container => container.classList.add('locked-prompt-content'));
+            protectedTextareas.forEach(ta => {
+                if(ta) {
+                    ta.readOnly = true;
+                    ta.classList.add('locked');
+                }
+            });
+        }
+
+        protectedContentWrappers.forEach(container => {
+            container.addEventListener('click', () => {
+                if (state.promptsLocked) {
+                    onDonationModalCloseCallback = () => {
+                        onPasswordSuccessCallback = unlockPrompts;
+                        showPasswordModal("Akses Terbatas", "Untuk melihat dan menyalin prompt, silakan masukkan kata sandi.");
+                    };
+                    elements.donationModal.classList.remove('hidden');
+                }
+            });
+        });
+
+        copyButtons.forEach(btn => {
+            if(btn) {
+                btn.addEventListener('click', (e) => {
+                    if (state.promptsLocked && btn.id !== 'copyPromptBtn1') {
+                        e.preventDefault();
+                    } else {
+                        const num = btn.id.slice(-1);
+                        const textareaId = `finalPrompt${num}`;
+                        copyToClipboard(elements[textareaId], btn);
+                    }
+                });
+            }
+        });
+        
+        elements.submitPasswordBtn.addEventListener('click', () => {
+            if (elements.passwordInput.value === 'bismillah') {
+                if (typeof onPasswordSuccessCallback === 'function') {
+                    onPasswordSuccessCallback();
+                }
+                onPasswordSuccessCallback = null;
+                hidePasswordModal();
+            } else {
+                elements.passwordError.textContent = 'Kata sandi salah!';
+                setTimeout(() => {
+                    elements.passwordError.textContent = '';
+                }, 2000);
+            }
+        });
+        
+        elements.closeModalBtn.addEventListener('click', hidePasswordModal);
+        
+        elements.contactIwanBtn.addEventListener('click', (e) => {
+            e.preventDefault();
+            const name = elements.contactNameInput.value.trim();
+            const business = elements.contactBusinessInput.value.trim();
+            
+            const message = `Nama: ${name}\nNama Usaha: ${business}`;
+            const whatsappUrl = `https://wa.me/6281510735932?text=${encodeURIComponent(message)}`;
+            
+            window.open(whatsappUrl, '_blank');
+        });
+        
+        function generateAccessId() {
+            return Math.floor(100000 + Math.random() * 900000).toString();
+        }
+
+        // Initial setup
+        document.addEventListener('DOMContentLoaded', () => {
+            const handleAccess = () => {
+                if (elements.accessIdInput.value === '181281' || elements.accessIdInput.value === '170845' || (state.generatedAccessId && elements.accessIdInput.value === state.generatedAccessId)) {
+                    unlockPrompts();
+                    elements.accessIdCard.classList.add('hidden');
+                    elements.formContainer.classList.remove('hidden');
+                    elements.accessIdError.innerHTML = '';
+                } else {
+                    elements.accessIdError.innerHTML = `Nomor ID Akses anda salah, hubungi admin aplikasi ini dengan menekan tombol <a href="#" id="errorRequestAccess" class="underline font-bold">Minta ID Akses</a>.`;
+                    
+                    document.getElementById('errorRequestAccess').addEventListener('click', (e) => {
+                        e.preventDefault();
+                        elements.donationModal.classList.remove('hidden');
+                    });
+
+                    setTimeout(() => {
+                        elements.accessIdError.innerHTML = '';
+                    }, 5000);
+                }
+            };
+
+            elements.submitAccessIdBtn.addEventListener('click', handleAccess);
+            elements.accessIdInput.addEventListener('keypress', (e) => {
+                if (e.key === 'Enter') {
+                    handleAccess();
+                }
+            });
+
+            elements.requestAccessIdBtn.addEventListener('click', (e) => {
+                e.preventDefault();
+                 onDonationModalCloseCallback = () => {
+                    onPasswordSuccessCallback = () => {
+                        state.generatedAccessId = generateAccessId();
+                        const message = `Halo, saya ingin meminta ID Akses untuk Tools Pembuat Video Promosi. ID Proyek saya adalah: ${state.generatedAccessId}`;
+                        const whatsappUrl = `https://wa.me/6281510735932?text=${encodeURIComponent(message)}`;
+                        window.open(whatsappUrl, '_blank');
+                        unlockPrompts();
+                    };
+                    showPasswordModal("Akses Terbatas", "Untuk melihat dan menyalin prompt, silakan masukkan kata sandi.");
+                };
+                elements.donationModal.classList.remove('hidden');
+            });
+            
+            elements.closeDonationModalBtn.addEventListener('click', () => {
+                elements.donationModal.classList.add('hidden');
+                 if (typeof onDonationModalCloseCallback === 'function') {
+                    onDonationModalCloseCallback();
+                    onDonationModalCloseCallback = null; // Reset after use
+                }
+            });
+            
+            elements.exitBtn.addEventListener('click', (e) => {
+                e.preventDefault();
+                resetAll(true);
+                elements.formContainer.classList.add('hidden');
+                elements.accessIdCard.classList.remove('hidden');
+                elements.accessIdInput.value = '';
+            });
+
+            for(let i = 1; i <= 4; i++) {
+                setupModelGroup(i);
+                elements[`decreaseModelBtn${i}`].disabled = true;
+                handleOptionSelection(elements[`skinColorOptions${i}`], `skinColor${i}`);
+                handleOptionSelection(elements[`faceShapeOptions${i}`], `faceShape${i}`);
+                handleOptionSelection(elements[`eyesShapeOptions${i}`], `eyesShape${i}`);
+                handleOptionSelection(elements[`noseShapeOptions${i}`], `noseShape${i}`);
+                handleOptionSelection(elements[`hairStyleOptions${i}`], `hairStyle${i}`);
+            }
+            
+            handleOptionSelection(elements.moodOptions, 'mood');
+            handleOptionSelection(elements.windEffectOptions, 'windEffect');
+            handleOptionSelection(elements.lightingOptions, 'lighting');
+            handleOptionSelection(elements.cameraTechniqueOptions, 'cameraTechnique');
+            handleOptionSelection(elements.timeOfDayOptions, 'timeOfDay');
+            handleOptionSelection(elements.temperatureOptions, 'temperature');
+            handleOptionSelection(elements.audioMixOptions, 'audioMix');
+            handleOptionSelection(elements.videoTypeOptions, 'videoType');
+            handleOptionSelection(elements.photoTypeOptions, 'photoType');
+            handleOptionSelection(elements.photoRatioOptions, 'photoRatio');
+            updateAllPrompts();
+            checkCollageButtonState();
+
+            elements.videoTitleInput.addEventListener('input', (e) => {
+                state.videoTitle = e.target.value;
+                updateAllPrompts();
+            });
+            elements.directorNameInput.addEventListener('input', (e) => {
+                state.directorName = e.target.value;
+                updateAllPrompts();
+            });
+            elements.modelActivityInput.addEventListener('input', (e) => {
+                state.modelActivity = e.target.value;
+                updateAllPrompts();
+            });
+            elements.sharedPropertyInput.addEventListener('input', (e) => {
+                state.sharedProperty = e.target.value;
+                updateAllPrompts();
+            });
+             elements.moodDescription.addEventListener('input', (e) => {
+                state.moodDescription = e.target.value;
+                updateAllPrompts();
+            });
+            elements.styleScenarioInput.addEventListener('input', (e) => {
+                state.styleScenario = e.target.value;
+            });
+            elements.photoPrompt.addEventListener('input', (e) => {
+                state.photoPrompt = e.target.value;
+            });
+            elements.openingLine.addEventListener('input', (e) => {
+                state.openingLine = e.target.value;
+                updateAllPrompts();
+            });
+            elements.explanation.addEventListener('input', (e) => {
+                state.explanation = e.target.value;
+                updateAllPrompts();
+            });
+            elements.cta.addEventListener('input', (e) => {
+                state.cta = e.target.value;
+                updateAllPrompts();
+            });
+            elements.interactionLine.addEventListener('input', (e) => {
+                state.interactionLine = e.target.value;
+                updateAllPrompts();
+            });
+            elements.copyPhotoPromptBtn.addEventListener('click', () => {
+                copyToClipboard(elements.photoPrompt, elements.copyPhotoPromptBtn);
+            });
+
+            elements.tutorialBtn.addEventListener('click', () => {
+                elements.tutorialModal.classList.remove('hidden');
+            });
+            elements.closeTutorialModalBtn.addEventListener('click', () => {
+                elements.tutorialModal.classList.add('hidden');
+            });
+        });
+    </script>
+</body>
+</html>
